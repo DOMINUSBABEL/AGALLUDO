@@ -1,0 +1,8 @@
+{
+  "name": "Agalludo Royale",
+  "description": "A tense risk-vs-reward dice battle royale game with gritty industrial aesthetics and real-time eliminator.",
+  "requestFramePermissions": [],
+  "majorCapabilities": [
+    "MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"
+  ]
+}
