@@ -29,12 +29,12 @@ body.theme-amber {
 }
 
 body.theme-green {
-  --bg-primary: #080c08;
-  --bg-secondary: #111a11;
-  --bg-tertiary: #1b291b;
-  --accent-color: #39ff14;
-  --accent-glow: rgba(57, 255, 20, 0.45);
-  --border-color: #233e23;
+  --bg-primary: #05140b;
+  --bg-secondary: #0d2417;
+  --bg-tertiary: #173623;
+  --accent-color: #dfb858;
+  --accent-glow: rgba(223, 184, 88, 0.45);
+  --border-color: #2c593d;
 }
 
 :root {
