@@ -571,6 +571,7 @@ let playerSkin = 'steel';
 // Ghost trail / Estela de trayectoria
 const maxGhostPoints = 50;
 let ghostLine;
+let playerDiceGlowRing;
 let ghostPoints = [];
 
 // Habilidades tácticas activas del jugador
@@ -1487,6 +1488,20 @@ function init3DAndPhysics() {
   ghostLine = new THREE.Line(ghostLineGeo, ghostLineMat);
   scene.add(ghostLine);
 
+  // Pulsing active selection ring under the player's dice
+  const ringGeo = new THREE.RingGeometry(0.35, 0.40, 32);
+  const ringMat = new THREE.MeshBasicMaterial({
+    color: 0x00bcd4,
+    transparent: true,
+    opacity: 0.0,
+    side: THREE.DoubleSide,
+    depthWrite: false
+  });
+  playerDiceGlowRing = new THREE.Mesh(ringGeo, ringMat);
+  playerDiceGlowRing.rotation.x = -Math.PI / 2;
+  playerDiceGlowRing.position.set(0, 0.005, 0); // ligeramente sobre la mesa
+  scene.add(playerDiceGlowRing);
+
   // 7. Sistema de Ondas en Fieltro (Impactos)
   const sparkGeo = new THREE.RingGeometry(0.01, 0.15, 24);
   
@@ -1973,6 +1988,24 @@ function updatePhysicsAndRender() {
     if (brakeBtn) brakeBtn.disabled = true;
     const shieldBtn = document.getElementById('btn-skill-shield');
     if (shieldBtn) shieldBtn.disabled = true;
+  }
+
+  // Actualizar y animar el anillo de selección pulsante debajo del dado del jugador
+  if (playerDiceGlowRing && pDice && myself && !myself.isEliminated && myself.lockout === 0 && !pDice.isRolling && currentGameState === GameState.PLAYING) {
+    playerDiceGlowRing.visible = true;
+    playerDiceGlowRing.position.copy(pDice.body.position);
+    playerDiceGlowRing.position.y = 0.005; // Fijo sobre el tapete
+    
+    // Pulsación sinusoidal
+    const pulseScale = 1.0 + Math.sin(Date.now() * 0.006) * 0.12;
+    playerDiceGlowRing.scale.set(pulseScale, pulseScale, 1.0);
+    playerDiceGlowRing.material.opacity = 0.4 + Math.sin(Date.now() * 0.006) * 0.25;
+    
+    // Color según la skin del jugador
+    const colors = SkinColors[playerSkin] || SkinColors.steel;
+    playerDiceGlowRing.material.color.setHex(colors.dots);
+  } else if (playerDiceGlowRing) {
+    playerDiceGlowRing.visible = false;
   }
 
   renderer3d.render(scene, camera);
