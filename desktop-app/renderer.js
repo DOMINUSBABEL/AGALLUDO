@@ -1105,9 +1105,21 @@ function handleDiceCollision(e) {
     const contact = contacts.find(c => c.bi === e.target || c.bj === e.target);
     
     if (contact) {
+      // Determinar la skin del dado que colisiona
+      const activeDie = tableDice.find(d => d.body === e.target);
+      let skinId = 'steel';
+      if (activeDie) {
+        if (activeDie.activePlayerId === 'player') {
+          skinId = playerSkin;
+        } else if (activeDie.activePlayerId) {
+          const cfg = DiceMesaConfig.find(c => c.playerId === activeDie.configId);
+          skinId = cfg ? cfg.skin : 'copper';
+        }
+      }
+
       // Estimar punto del contacto
       const pos = e.target.position;
-      spawnSparks(new THREE.Vector3(pos.x, pos.y - 0.25, pos.z), relativeVelocity);
+      spawnSparks(new THREE.Vector3(pos.x, pos.y - 0.25, pos.z), relativeVelocity, skinId);
     }
 
     // Camera shake proporcional a la fuerza
@@ -1119,7 +1131,7 @@ function handleDiceCollision(e) {
 }
 
 // --- DUST & SPARK SPARTICLES SYSTEM ---
-function spawnSparks(position, intensity) {
+function spawnSparks(position, intensity, skinId) {
   let spawned = 0;
   const count = Math.min(Math.floor(intensity * 3), 15);
 
@@ -1137,9 +1149,9 @@ function spawnSparks(position, intensity) {
         (Math.random() - 0.5) * 3
       );
 
-      // Color según la skin equipada
-      const activeColor = SkinColors[playerSkin]?.dots || '#ffb000';
-      s.mesh.material.color.set(activeColor);
+      // Color según la skin del dado colisionado
+      const colors = SkinColors[skinId] || SkinColors.steel;
+      s.mesh.material.color.set(colors.dots);
 
       s.maxLife = 0.3 + Math.random() * 0.4;
       s.life = s.maxLife;
