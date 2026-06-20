@@ -1576,23 +1576,32 @@ function updatePhysicsAndRender() {
   bulbWorldPos.applyMatrix4(lightBulbFixture.matrixWorld);
   lightBulb.position.copy(bulbWorldPos);
 
-  // 4. Procesar Camera Shake con atenuación lineal
+  // 4. Calcular Dolly Zoom y Seguimiento de Cámara dinámico (Commit 9)
+  let targetCamPos = new THREE.Vector3().copy(originalCamPos);
+  if (isDragging) {
+    targetCamPos.set(0, 6.2, 5.2); // Acercamiento suave al apuntar
+  } else {
+    const playerDice = tableDice.find(d => d.configId === 'player');
+    if (playerDice && playerDice.isRolling) {
+      targetCamPos.set(playerDice.body.position.x * 0.35, 7.8, playerDice.body.position.z * 0.35 + 5.5);
+    }
+  }
+
   if (cameraShakeTime > 0) {
     cameraShakeTime -= dt;
     cameraShakeIntensity = THREE.MathUtils.lerp(cameraShakeIntensity, 0, dt * 8);
-    
     const offsetX = (Math.random() - 0.5) * cameraShakeIntensity;
     const offsetY = (Math.random() - 0.5) * cameraShakeIntensity;
     const offsetZ = (Math.random() - 0.5) * cameraShakeIntensity;
     
-    camera.position.set(
-      originalCamPos.x + offsetX,
-      originalCamPos.y + offsetY,
-      originalCamPos.z + offsetZ
-    );
+    camera.position.lerp(targetCamPos, dt * 4.5);
+    camera.position.x += offsetX;
+    camera.position.y += offsetY;
+    camera.position.z += offsetZ;
   } else {
-    camera.position.copy(originalCamPos);
+    camera.position.lerp(targetCamPos, dt * 4.5);
   }
+  camera.lookAt(0, -0.45, 0);
 
   // 5. Animación de sprites flotantes (Subir lentamente con escala elástica)
   billboardSprites.forEach(s => {
