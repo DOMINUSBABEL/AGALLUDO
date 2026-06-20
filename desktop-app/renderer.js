@@ -1894,10 +1894,11 @@ function updatePhysicsAndRender() {
     d.mesh.quaternion.copy(d.body.quaternion);
 
     if (d.configId === 'player' && d.isRolling && d.body.position.y > 0.01) {
-      if (ghostPoints.length < maxGhostPoints) {
-        ghostPoints.push(new THREE.Vector3(d.body.position.x, d.body.position.y, d.body.position.z));
-        updateGhostTrail();
+      ghostPoints.push(new THREE.Vector3(d.body.position.x, d.body.position.y, d.body.position.z));
+      if (ghostPoints.length > maxGhostPoints) {
+        ghostPoints.shift();
       }
+      updateGhostTrail();
     }
 
     // Táctica: bots de alto nivel usan freno magnético para congelar 5s o 6s
@@ -1935,6 +1936,15 @@ function updatePhysicsAndRender() {
       }
     }
   });
+
+  // Desvanecer el rastro de la trayectoria cuando el dado se detiene o no rueda
+  const pDie = tableDice.find(d => d.configId === 'player');
+  if (!pDie || !pDie.isRolling) {
+    if (ghostPoints.length > 0) {
+      ghostPoints.shift();
+      updateGhostTrail();
+    }
+  }
 
   // 7. Actualizar estado de botones de habilidad táctica del jugador
   const pDice = tableDice.find(d => d.configId === 'player');
