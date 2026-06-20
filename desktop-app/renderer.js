@@ -529,6 +529,9 @@ const maxSparks = 80;
 // Variables de Shake Damping
 let cameraShakeTime = 0;
 let cameraShakeIntensity = 0;
+let cameraShakeOffsetX = 0;
+let cameraShakeOffsetY = 0;
+let cameraShakeOffsetZ = 0;
 const originalCamPos = new THREE.Vector3(0, 8.5, 7);
 
 // HUD Visual de Dados (Sprites 3D flotantes)
@@ -1542,10 +1545,10 @@ function handleDiceCollision(e) {
       spawnSparks(new THREE.Vector3(pos.x, pos.y - 0.25, pos.z), relativeVelocity, skinId);
     }
 
-    // Camera shake proporcional a la fuerza
-    if (relativeVelocity > 2.5) {
-      cameraShakeIntensity = Math.min(relativeVelocity * 0.03, 0.15);
-      cameraShakeTime = 0.25; // Duración corta
+    // Camera shake proporcional a la fuerza (AAA impact feel)
+    if (relativeVelocity > 1.2) {
+      cameraShakeIntensity = Math.min(relativeVelocity * 0.04, 0.22);
+      cameraShakeTime = 0.3; // Sacudida ligeramente más duradera
     }
   }
 }
@@ -1850,19 +1853,26 @@ function updatePhysicsAndRender() {
 
   if (cameraShakeTime > 0) {
     cameraShakeTime -= dt;
-    cameraShakeIntensity = THREE.MathUtils.lerp(cameraShakeIntensity, 0, dt * 8);
-    const offsetX = (Math.random() - 0.5) * cameraShakeIntensity;
-    const offsetY = (Math.random() - 0.5) * cameraShakeIntensity;
-    const offsetZ = (Math.random() - 0.5) * cameraShakeIntensity;
+    cameraShakeIntensity = THREE.MathUtils.lerp(cameraShakeIntensity, 0, dt * 7.0);
+    cameraShakeOffsetX = (Math.random() - 0.5) * cameraShakeIntensity;
+    cameraShakeOffsetY = (Math.random() - 0.5) * cameraShakeIntensity;
+    cameraShakeOffsetZ = (Math.random() - 0.5) * cameraShakeIntensity;
     
-    camera.position.lerp(targetCamPos, dt * 4.5);
-    camera.position.x += offsetX;
-    camera.position.y += offsetY;
-    camera.position.z += offsetZ;
+    camera.position.lerp(targetCamPos, dt * 5.0);
+    camera.position.x += cameraShakeOffsetX;
+    camera.position.y += cameraShakeOffsetY;
+    camera.position.z += cameraShakeOffsetZ;
   } else {
-    camera.position.lerp(targetCamPos, dt * 4.5);
+    camera.position.lerp(targetCamPos, dt * 5.0);
+    cameraShakeOffsetX = THREE.MathUtils.lerp(cameraShakeOffsetX, 0, dt * 8.0);
+    cameraShakeOffsetY = THREE.MathUtils.lerp(cameraShakeOffsetY, 0, dt * 8.0);
+    cameraShakeOffsetZ = THREE.MathUtils.lerp(cameraShakeOffsetZ, 0, dt * 8.0);
   }
-  camera.lookAt(0, -0.45, 0);
+  camera.lookAt(
+    0 + cameraShakeOffsetX * 0.6,
+    -0.45 + cameraShakeOffsetY * 0.6,
+    0 + cameraShakeOffsetZ * 0.6
+  );
 
   // 5. Animación de sprites flotantes (Subir lentamente con escala elástica)
   billboardSprites.forEach(s => {
