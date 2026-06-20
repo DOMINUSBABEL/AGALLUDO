@@ -1831,6 +1831,7 @@ function launchDiceFísica(launcherId, fx, fz) {
 
 // --- BUCLE FÍSICO Y ANIMACIÓN PRINCIPAL (~60 FPS) ---
 let lastFrameTime = performance.now();
+let physicsAccumulator = 0;
 
 function updatePhysicsAndRender() {
   requestAnimationFrame(updatePhysicsAndRender);
@@ -1839,8 +1840,18 @@ function updatePhysicsAndRender() {
   const dt = Math.min((now - lastFrameTime) / 1000, 0.1); // Cap a 100ms max
   lastFrameTime = now;
 
-  // 1. Simulación física Cannon.js
-  world.step(1 / 60);
+  // 1. Simulación física Cannon.js con acumulador fijo para suavidad de fotogramas (AAA smooth)
+  const fixedTimeStep = 1 / 60;
+  physicsAccumulator += dt;
+  let subSteps = 0;
+  while (physicsAccumulator >= fixedTimeStep && subSteps < 5) {
+    world.step(fixedTimeStep);
+    physicsAccumulator -= fixedTimeStep;
+    subSteps++;
+  }
+  if (physicsAccumulator >= fixedTimeStep) {
+    physicsAccumulator = 0;
+  }
 
   // 2. Actualizar partículas
   updateParticles(dt);
