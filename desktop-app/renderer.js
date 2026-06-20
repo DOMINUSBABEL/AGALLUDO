@@ -747,6 +747,100 @@ function createDiceFaceTexture(value, skinId) {
   return new THREE.CanvasTexture(canvas);
 }
 
+function createTableTexture(styleId) {
+  const canvas = document.createElement('canvas');
+  canvas.width = 512;
+  canvas.height = 512;
+  const ctx = canvas.getContext('2d');
+
+  switch (styleId) {
+    case 'oak':
+      ctx.fillStyle = '#3e271c';
+      ctx.fillRect(0, 0, 512, 512);
+      ctx.strokeStyle = '#2b1b13';
+      ctx.lineWidth = 2.0;
+      for (let i = 0; i < 512; i += 12) {
+        ctx.beginPath();
+        let y = 0;
+        ctx.moveTo(0, i);
+        while (y < 512) {
+          y += 10;
+          let offset = Math.sin(y * 0.05 + i) * 6;
+          ctx.lineTo(y, i + offset);
+        }
+        ctx.stroke();
+      }
+      break;
+    case 'felt':
+      ctx.fillStyle = '#1b5e20';
+      ctx.fillRect(0, 0, 512, 512);
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      for (let i = 0; i < 4000; i++) {
+        let rx = Math.random() * 512;
+        let ry = Math.random() * 512;
+        ctx.fillRect(rx, ry, 2, 2);
+      }
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
+      for (let i = 0; i < 4000; i++) {
+        let rx = Math.random() * 512;
+        let ry = Math.random() * 512;
+        ctx.fillRect(rx, ry, 2, 2);
+      }
+      break;
+    case 'ironplate':
+      ctx.fillStyle = '#455a64';
+      ctx.fillRect(0, 0, 512, 512);
+      ctx.strokeStyle = '#263238';
+      ctx.lineWidth = 3.0;
+      for (let i = 0; i <= 512; i += 64) {
+        ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 512); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(512, i); ctx.stroke();
+      }
+      ctx.fillStyle = '#37474f';
+      for (let x = 32; x < 512; x += 64) {
+        for (let y = 32; y < 512; y += 64) {
+          ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
+        }
+      }
+      break;
+    case 'marble':
+      ctx.fillStyle = '#e0e0e0';
+      ctx.fillRect(0, 0, 512, 512);
+      ctx.strokeStyle = '#9e9e9e';
+      ctx.lineWidth = 1.5;
+      for (let i = 0; i < 15; i++) {
+        ctx.beginPath();
+        let sx = Math.random() * 512;
+        ctx.moveTo(sx, 0);
+        let currX = sx;
+        for (let y = 0; y <= 512; y += 20) {
+          currX += (Math.random() - 0.5) * 18;
+          ctx.lineTo(currX, y);
+        }
+        ctx.stroke();
+      }
+      break;
+    case 'plasma':
+      ctx.fillStyle = '#0a0c10';
+      ctx.fillRect(0, 0, 512, 512);
+      ctx.strokeStyle = '#00f0ff';
+      ctx.shadowColor = '#00f0ff';
+      ctx.shadowBlur = 8;
+      ctx.lineWidth = 1.0;
+      for (let i = 0; i <= 512; i += 40) {
+        ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 512); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(512, i); ctx.stroke();
+      }
+      break;
+  }
+
+  const texture = new THREE.CanvasTexture(canvas);
+  texture.wrapS = THREE.RepeatWrapping;
+  texture.wrapT = THREE.RepeatWrapping;
+  texture.repeat.set(1.5, 2.0);
+  return texture;
+}
+
 function applyDiceSkins() {
   tableDice.forEach((d) => {
     let skinId = 'steel';
@@ -1244,32 +1338,37 @@ function applyTableStyle() {
   const styleId = currentTableStyle;
   const cfg = Unlockables.tables.find(t => t.id === styleId) || Unlockables.tables[0];
   
-  // 1. Cambiar propiedades visuales de la mesa
+  // 1. Cambiar propiedades visuales de la mesa y aplicar texturas dinámicas offline
+  if (tableMesh.material.map) {
+    tableMesh.material.map.dispose();
+  }
+  tableMesh.material.map = createTableTexture(styleId);
+
   switch (styleId) {
     case 'oak':
-      tableMesh.material.color.set(0x3e271c);
-      tableMesh.material.roughness = 0.9;
+      tableMesh.material.color.set(0xffffff); // Modula la textura al 100% de color original
+      tableMesh.material.roughness = 0.85;
       tableMesh.material.metalness = 0.05;
       break;
     case 'felt':
-      tableMesh.material.color.set(0x1b5e20); // Verde fieltro
-      tableMesh.material.roughness = 0.95;
+      tableMesh.material.color.set(0xffffff);
+      tableMesh.material.roughness = 0.98;
       tableMesh.material.metalness = 0.0;
       break;
     case 'ironplate':
-      tableMesh.material.color.set(0x455a64); // Chapa de hierro
-      tableMesh.material.roughness = 0.25;
-      tableMesh.material.metalness = 0.85;
+      tableMesh.material.color.set(0xffffff);
+      tableMesh.material.roughness = 0.2;
+      tableMesh.material.metalness = 0.9;
       break;
     case 'marble':
-      tableMesh.material.color.set(0xe0e0e0); // Mármol blanco
-      tableMesh.material.roughness = 0.08;
-      tableMesh.material.metalness = 0.1;
+      tableMesh.material.color.set(0xffffff);
+      tableMesh.material.roughness = 0.05;
+      tableMesh.material.metalness = 0.15;
       break;
     case 'plasma':
-      tableMesh.material.color.set(0x0a0c10); // Base oscura
-      tableMesh.material.roughness = 0.5;
-      tableMesh.material.metalness = 0.7;
+      tableMesh.material.color.set(0xffffff);
+      tableMesh.material.roughness = 0.4;
+      tableMesh.material.metalness = 0.85;
       break;
   }
   tableMesh.material.needsUpdate = true;
