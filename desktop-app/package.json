@@ -1,0 +1,21 @@
+{
+  "name": "agalludo-desktop",
+  "version": "1.0.0",
+  "description": "Agalludo Royale 3D Competitivo",
+  "main": "main.js",
+  "scripts": {
+    "start": "electron .",
+    "package": "electron-packager . Agalludo --platform=win32 --arch=x64 --out=dist --overwrite"
+  },
+  "keywords": [],
+  "author": "DOMINUSBABEL",
+  "license": "ISC",
+  "dependencies": {
+    "cannon": "^0.6.2",
+    "three": "^0.160.0"
+  },
+  "devDependencies": {
+    "electron": "^28.2.0",
+    "electron-packager": "^17.1.2"
+  }
+}
