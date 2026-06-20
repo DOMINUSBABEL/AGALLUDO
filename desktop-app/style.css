@@ -1531,3 +1531,37 @@ body {
   font-size: 11px;
   color: var(--text-secondary);
 }
+
+/* --- ESPACIO PUBLICITARIO GOOGLE ADS (BANNER) --- */
+#ad-banner-container {
+  width: 100%;
+  height: 50px;
+  background: #090c0e;
+  border-top: 1.5px solid var(--border-color);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  z-index: 100;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.6);
+  flex-shrink: 0;
+}
+
+.ad-placeholder {
+  font-family: 'Courier Prime', monospace;
+  font-size: 9px;
+  color: var(--text-secondary);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  animation: ad-glow 2s infinite alternate;
+}
+
+@keyframes ad-glow {
+  0% {
+    color: var(--text-secondary);
+    text-shadow: none;
+  }
+  100% {
+    color: var(--accent-color);
+    text-shadow: 0 0 6px var(--accent-glow);
+  }
+}
