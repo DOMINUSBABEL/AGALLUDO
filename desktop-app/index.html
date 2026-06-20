@@ -1,0 +1,276 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>AGALLUDO ROYALE: BATTLE ROYALE DE DADOS 3D</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="theme-cyan">
+  <div id="game-container">
+    <!-- CABECERA DE PERFIL GLOBAL (SIEMPRE VISIBLE EN INTRO Y PLAY) -->
+    <header id="global-profile-bar">
+      <div class="profile-left">
+        <span class="profile-avatar">👤</span>
+        <div class="profile-details">
+          <div class="profile-name-row">
+            <span class="profile-name">TU (JUGADOR)</span>
+            <span id="player-title" class="profile-title">Recluso de la Fosa</span>
+          </div>
+          <div class="xp-bar-container">
+            <div id="xp-progress" class="xp-bar-fill" style="width: 0%;"></div>
+            <span id="xp-text" class="xp-label">XP: 0 / 300</span>
+          </div>
+        </div>
+      </div>
+      <div class="profile-right">
+        <div class="level-badge">
+          <span class="lvl-lbl">NIVEL</span>
+          <span id="player-level" class="lvl-val">1</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- PANTALLA DE INTRODUCCIÓN / MENU PRINCIPAL -->
+    <div id="intro-screen" class="screen active">
+      <div class="logo-container">
+        <h1 class="logo-title">AGALLUDO</h1>
+        <h2 class="logo-subtitle">ROYALE</h2>
+        <p class="logo-edition">GEOMETRIC BATTLE ROYALE EXPERIENCE</p>
+      </div>
+
+      <div class="menu-panels-container">
+        <!-- Panel 1: Modos e IA -->
+        <div class="intro-card config-card">
+          <h3>SELECCIÓN DE COMBATE</h3>
+          
+          <div class="config-group">
+            <label>MODO DE JUEGO</label>
+            <div class="toggle-buttons">
+              <button id="btn-mode-tournament" class="btn-toggle active">BATTLE ROYALE (16 JUG.)</button>
+              <button id="btn-mode-sandbox" class="btn-toggle">SANDBOX (PRÁCTICA)</button>
+            </div>
+          </div>
+
+          <div class="config-group" id="difficulty-group">
+            <label>DIFICULTAD DE LOS BOTS</label>
+            <select id="select-difficulty" class="config-select">
+              <option value="BRONCE">IA NOVATA (RANGO BRONCE)</option>
+              <option value="PLATA" selected>IA TÁCTICA (RANGO PLATA)</option>
+              <option value="ORO">IA MAESTRA (RANGO ORO / DICE CONTROL)</option>
+            </select>
+          </div>
+
+          <!-- Reproductor de Música Procedural -->
+          <div class="config-group music-group">
+            <label>AUDIO PROCEDURAL (SINTETIZADO)</label>
+            <div class="music-controls">
+              <button id="btn-toggle-music" class="btn btn-action">MÚSICA: ENCENDIDO</button>
+              <button id="btn-toggle-sfx" class="btn btn-action">EFECTOS: ENCENDIDO</button>
+            </div>
+          </div>
+
+          <button id="btn-start-game" class="btn btn-primary btn-block">INGRESAR A LA FOSA</button>
+        </div>
+
+        <!-- Panel 2: Personalización y Desbloqueos (Niveles 1-150) -->
+        <div class="intro-card customization-card">
+          <h3>PROGRESO Y PERSONALIZACIÓN</h3>
+          
+          <div class="custom-tabs">
+            <button class="tab-btn active" data-tab="dice-skins">DADOS</button>
+            <button class="tab-btn" data-tab="tables">MESAS</button>
+            <button class="tab-btn" data-tab="ui-themes">TEMAS UI</button>
+            <button class="tab-btn" data-tab="titles">TÍTULOS</button>
+          </div>
+
+          <!-- Contenedores de opciones dinámicas -->
+          <div class="custom-tab-content active" id="tab-dice-skins">
+            <div class="custom-grid" id="dice-skins-grid">
+              <!-- Cargado por JS con validaciones de nivel -->
+            </div>
+          </div>
+
+          <div class="custom-tab-content" id="tab-tables">
+            <div class="custom-grid" id="tables-grid">
+              <!-- Estilos de mesa con físicas asociadas -->
+            </div>
+          </div>
+
+          <div class="custom-tab-content" id="tab-ui-themes">
+            <div class="custom-grid" id="ui-themes-grid">
+              <!-- Cambia las variables CSS globales -->
+            </div>
+          </div>
+
+          <div class="custom-tab-content" id="tab-titles">
+            <div class="custom-grid" id="titles-grid">
+              <!-- Títulos desbloqueables -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANTALLA DE JUEGO ACTIVO -->
+    <div id="play-screen" class="screen">
+      <!-- CABECERA INDUSTRIAL -->
+      <header class="header-console">
+        <div class="header-status">
+          <span>TORNEO DE LA FOSA | RONDAS PROGRESIVAS</span>
+        </div>
+        <div class="header-timer">
+          <div class="timer-title">TIEMPO PARA ELIMINACIÓN</div>
+          <div id="timer-display">30.0</div>
+        </div>
+        <div class="header-actions">
+          <button id="btn-reset-lobby" class="btn btn-danger-outline">SALIR AL LOBBY</button>
+        </div>
+      </header>
+
+      <!-- SECCIÓN DEL TABLERO Y LÍDERES -->
+      <div class="table-section">
+        <!-- Tabla de Supervivencia Lateral (Leaderboard) -->
+        <aside class="leaderboard-container">
+          <h3 id="leaderboard-title">JUGADORES VIVOS</h3>
+          <div class="leaderboard-header">
+            <span>Jugador</span>
+            <span>Secured</span>
+            <span>Turn</span>
+          </div>
+          <ul id="leaderboard-list">
+            <!-- Cargado dinámicamente -->
+          </ul>
+        </aside>
+
+        <!-- Mesa de Dados 3D (Three.js Canvas) -->
+        <main class="table-canvas-container">
+          <div id="canvas-3d"></div>
+          
+          <!-- Dice setting HUD interactivo -->
+          <div id="dice-setting-hud">
+            <span class="hud-label">CARA INICIAL:</span>
+            <div class="hud-faces">
+              <button class="face-selector-btn" data-face="1">1</button>
+              <button class="face-selector-btn" data-face="2">2</button>
+              <button class="face-selector-btn" data-face="3">3</button>
+              <button class="face-selector-btn" data-face="4">4</button>
+              <button class="face-selector-btn" data-face="5">5</button>
+              <button class="face-selector-btn active" data-face="6">6</button>
+            </div>
+          </div>
+
+          <!-- Indicador visual de arrastre o instrucción de tiro -->
+          <div id="swipe-instruction">DESLIZA EL DADO CON PRECISIÓN</div>
+          <!-- Sandbox overlay para práctica -->
+          <div id="sandbox-indicator" class="hidden">MODO SANDBOX DE ENTRENAMIENTO ACTIVADO</div>
+          <!-- HUD de física de la mesa actual -->
+          <div id="table-physics-hud">
+            Estilo: <span id="mat-label-physics">Roble</span> | 
+            Fricción: <span id="friction-label-physics">Media</span> | 
+            Gravedad: <span id="gravity-label-physics">Estándar</span>
+          </div>
+        </main>
+      </div>
+
+      <!-- PANEL DE CONTROL INFERIOR Y CRT LOG -->
+      <footer class="controls-section">
+        <!-- CRT Console Log -->
+        <div class="crt-log-container">
+          <div class="crt-scanline"></div>
+          <div class="crt-glow"></div>
+          <div class="crt-header">TELEMETRÍA CRÍTICA DE LA FOSA v1.50</div>
+          <div id="crt-logs" class="crt-content">
+            <!-- Entradas de la bitácora de juego -->
+          </div>
+        </div>
+
+        <!-- Centro de Acciones del Jugador -->
+        <div class="player-actions-container">
+          <div id="player-status-badge">TU TURNO (ALINEANDO TRAYECTORIA)</div>
+          <div class="score-summary">
+            <div class="score-box">
+              <span class="label">ACUMULADO TURNO</span>
+              <span id="turn-score" class="value">0</span>
+            </div>
+            <div class="score-box">
+              <span class="label">TOTAL ASEGURADO</span>
+              <span id="secured-score" class="value">0</span>
+            </div>
+          </div>
+          <div class="button-row">
+            <button id="btn-player-roll" class="btn btn-action">LANZAR DADO</button>
+            <button id="btn-player-bank" class="btn btn-success" disabled>ASEGURAR (BANK)</button>
+          </div>
+          <div class="skills-row">
+            <button id="btn-skill-brake" class="btn-skill" disabled>
+              <span class="skill-name">💥 FRENO MAGNÉTICO</span>
+              <span class="skill-key">[ESPACIO]</span>
+              <span class="skill-status" id="brake-status">LISTO</span>
+            </button>
+            <button id="btn-skill-shield" class="btn-skill" disabled>
+              <span class="skill-name">🛡️ ESCUDO DE FOSA</span>
+              <span class="skill-key">[C]</span>
+              <span class="skill-status" id="shield-status">LISTO</span>
+            </button>
+          </div>
+          <div id="lockout-overlay" class="hidden">
+            <div class="lockout-spinner"></div>
+            <span>STASIS POR 1 MORTAL <strong id="lockout-timer">3.0s</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <!-- PANTALLA DE SHOCK DE ELIMINACIÓN -->
+    <div id="elimination-screen" class="screen">
+      <div class="elimination-glow"></div>
+      <div class="elimination-content">
+        <h2 class="shock-title">TRIBUNAL DE LA FOSA</h2>
+        <div class="divider"></div>
+        <p class="shock-msg">EJECUCIÓN DE CONDENA EN CURSO...</p>
+        <h1 id="eliminated-name-display" class="eliminated-name">JUGADOR</h1>
+        <p class="shock-sub">ELIMINADO POR PUNTAJE INSUFICIENTE</p>
+      </div>
+    </div>
+
+    <!-- PANTALLA DE JUEGO TERMINADO (DERROTA) -->
+    <div id="gameover-screen" class="screen">
+      <div class="skull-glow">💀</div>
+      <h1 class="gameover-title">HAS SIDO ELIMINADO</h1>
+      <p class="gameover-sub">La fosa industrial reclamó tu puntaje.</p>
+      <div class="gameover-stats">
+        <p>Fuiste ejecutado en la ronda de eliminación.</p>
+        <p>Eliminado por: <span id="eliminated-by-name">---</span></p>
+        <div class="xp-gain-card" id="xp-lost-gain">
+          Ganaste +<span id="xp-lost-value">0</span> XP por tu desempeño
+        </div>
+      </div>
+      <div class="btn-row">
+        <button id="btn-gameover-retry" class="btn btn-primary">REINTENTAR</button>
+        <button id="btn-gameover-lobby" class="btn btn-default">VOLVER AL MENU</button>
+      </div>
+    </div>
+
+    <!-- PANTALLA DE VICTORIA SUPREMA -->
+    <div id="victory-screen" class="screen">
+      <div class="victory-glow">🏆</div>
+      <h1 class="victory-title">AGALLUDO SUPREMO</h1>
+      <p class="victory-sub">Único sobreviviente del Battle Royale.</p>
+      <div class="victory-stats">
+        <p>Superaste a todos los contrincantes con precisión y nervios de acero.</p>
+        <div class="xp-gain-card highlight" id="xp-win-gain">
+          ¡Victoria Suprema! Ganaste +<span id="xp-win-value">0</span> XP
+        </div>
+      </div>
+      <div class="btn-row">
+        <button id="btn-victory-retry" class="btn btn-primary">JUGAR OTRA VEZ</button>
+        <button id="btn-victory-lobby" class="btn btn-default">VOLVER AL MENU</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cargar motor de juego -->
+  <script src="renderer.js"></script>
+
+</body>
+</html>
