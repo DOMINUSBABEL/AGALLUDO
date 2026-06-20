@@ -1269,7 +1269,12 @@ function createLandedSprite(value, position) {
   const mat = new THREE.SpriteMaterial({ map: texture, transparent: true, opacity: 1 });
   const sprite = new THREE.Sprite(mat);
   sprite.position.set(position.x, position.y + 0.8, position.z);
-  sprite.scale.set(0.9, 0.9, 0.9);
+  
+  // Guardar escala inicial y objetivo para animación elástica
+  sprite.initialScale = 0.1;
+  sprite.targetScale = 0.95;
+  sprite.scale.set(0.1, 0.1, 0.1);
+  sprite.age = 0;
   
   scene.add(sprite);
   billboardSprites.push(sprite);
@@ -1432,10 +1437,28 @@ function updatePhysicsAndRender() {
     camera.position.copy(originalCamPos);
   }
 
-  // 5. Animación de sprites flotantes (Subir lentamente)
+  // 5. Animación de sprites flotantes (Subir lentamente con escala elástica)
   billboardSprites.forEach(s => {
-    s.position.y += dt * 0.25;
-    s.material.opacity = THREE.MathUtils.lerp(s.material.opacity, 0, dt * 1.5);
+    s.age = (s.age || 0) + dt;
+    s.position.y += dt * 0.45; // Subida más ágil
+    
+    // Escala elástica: pop rápido y asentamiento
+    if (s.age < 0.15) {
+      const t = s.age / 0.15;
+      const currentScale = THREE.MathUtils.lerp(s.initialScale || 0.1, (s.targetScale || 0.95) * 1.3, t);
+      s.scale.set(currentScale, currentScale, currentScale);
+    } else if (s.age < 0.3) {
+      const t = (s.age - 0.15) / 0.15;
+      const currentScale = THREE.MathUtils.lerp((s.targetScale || 0.95) * 1.3, s.targetScale || 0.95, t);
+      s.scale.set(currentScale, currentScale, currentScale);
+    } else {
+      // Decaimiento de escala y desvanecimiento
+      const t = Math.min((s.age - 0.3) / 1.2, 1.0);
+      const currentScale = THREE.MathUtils.lerp(s.targetScale || 0.95, 0.4, t);
+      s.scale.set(currentScale, currentScale, currentScale);
+    }
+    
+    s.material.opacity = THREE.MathUtils.lerp(s.material.opacity, 0, dt * 1.8);
   });
 
   // 6. Sincronizar todos los dados
