@@ -527,14 +527,39 @@ body {
   border: none;
   letter-spacing: 2px;
   text-transform: uppercase;
-  transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
+  transition: transform 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275), box-shadow 0.25s ease, background-color 0.2s ease, border-color 0.2s ease, filter 0.2s ease;
   outline: none;
   position: relative;
   overflow: hidden;
 }
 
 .btn:active:not(:disabled) {
-  transform: translateY(1px) scale(0.98);
+  transform: translateY(1px) scale(0.95) !important;
+}
+
+.btn::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: -150%;
+  width: 50%;
+  height: 100%;
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0), rgba(255, 255, 255, 0.45), rgba(255, 255, 255, 0));
+  transform: skewX(-20deg);
+  pointer-events: none;
+}
+
+.btn:hover:not(:disabled)::after {
+  animation: shine-sweep 0.75s cubic-bezier(0.23, 1, 0.32, 1) forwards;
+}
+
+@keyframes shine-sweep {
+  0% {
+    left: -150%;
+  }
+  100% {
+    left: 150%;
+  }
 }
 
 .btn-primary {
@@ -545,9 +570,9 @@ body {
 }
 
 .btn-primary:hover:not(:disabled) {
-  transform: translateY(-2.5px);
-  box-shadow: 0 8px 25px var(--accent-glow);
-  filter: brightness(1.15);
+  transform: translateY(-3px) scale(1.03);
+  box-shadow: 0 8px 30px var(--accent-glow);
+  filter: brightness(1.2);
 }
 
 .btn-action {
@@ -557,9 +582,10 @@ body {
 }
 
 .btn-action:hover:not(:disabled) {
-  background: rgba(255,255,255,0.04);
+  transform: translateY(-2px) scale(1.03);
+  background: rgba(255,255,255,0.06);
   border-color: var(--accent-color);
-  box-shadow: 0 0 12px var(--accent-glow);
+  box-shadow: 0 6px 18px var(--accent-glow);
   text-shadow: 0 0 5px var(--accent-color);
 }
 
@@ -571,8 +597,8 @@ body {
 
 .btn-success:hover:not(:disabled) {
   background: #388e3c;
-  box-shadow: 0 6px 20px rgba(46, 125, 50, 0.5);
-  transform: translateY(-2px);
+  box-shadow: 0 8px 25px rgba(76, 175, 80, 0.5);
+  transform: translateY(-3px) scale(1.03);
 }
 
 .btn-success:disabled {
