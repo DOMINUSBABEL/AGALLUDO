@@ -1881,14 +1881,22 @@ function updatePhysicsAndRender() {
   bulbWorldPos.applyMatrix4(lightBulbFixture.matrixWorld);
   lightBulb.position.copy(bulbWorldPos);
 
-  // 4. Calcular Dolly Zoom y Seguimiento de Cámara dinámico (Commit 9)
+  // 4. Calcular Dolly Zoom y Seguimiento de Cámara dinámico (Seguimiento promedio reactivo)
   let targetCamPos = new THREE.Vector3().copy(originalCamPos);
   if (isDragging) {
     targetCamPos.set(0, 6.2, 5.2); // Acercamiento suave al apuntar
   } else {
-    const playerDice = tableDice.find(d => d.configId === 'player');
-    if (playerDice && playerDice.isRolling) {
-      targetCamPos.set(playerDice.body.position.x * 0.35, 7.8, playerDice.body.position.z * 0.35 + 5.5);
+    const rollingDice = tableDice.filter(d => d.isRolling);
+    if (rollingDice.length > 0) {
+      let avgX = 0;
+      let avgZ = 0;
+      rollingDice.forEach(d => {
+        avgX += d.body.position.x;
+        avgZ += d.body.position.z;
+      });
+      avgX /= rollingDice.length;
+      avgZ /= rollingDice.length;
+      targetCamPos.set(avgX * 0.32, 7.8, avgZ * 0.32 + 5.4);
     }
   }
 
