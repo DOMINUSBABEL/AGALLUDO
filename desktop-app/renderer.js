@@ -1361,25 +1361,38 @@ function init3DAndPhysics() {
   createChipStack(2.7, 3.4, 11, 0xeeeeee);
 
   // 4. Luces y Foco colgante
-  const ambient = new THREE.AmbientLight(0xffffff, 0.12);
+  const ambient = new THREE.AmbientLight(0xffffff, 0.15);
   scene.add(ambient);
 
-  lightBulb = new THREE.PointLight(0xffe2cc, 2.0, 20);
+  // Luz hemisférica para ambientación cinematográfica
+  const hemiLight = new THREE.HemisphereLight(0xfff5eb, 0x111622, 0.25);
+  scene.add(hemiLight);
+
+  lightBulb = new THREE.PointLight(0xffe2cc, 2.8, 25);
   lightBulb.position.set(0, 4.5, 0);
   lightBulb.castShadow = true;
-  lightBulb.shadow.mapSize.width = 1024;
-  lightBulb.shadow.mapSize.height = 1024;
-  lightBulb.shadow.bias = -0.002;
-  lightBulb.shadow.radius = 4.0;
+  lightBulb.shadow.mapSize.width = 2048;
+  lightBulb.shadow.mapSize.height = 2048;
+  lightBulb.shadow.bias = -0.001;
+  lightBulb.shadow.radius = 6.0;
   scene.add(lightBulb);
 
   // Luz secundaria para sombras suaves y brillos en acrílico
-  const dirLight = new THREE.DirectionalLight(0xffffff, 0.45);
+  const dirLight = new THREE.DirectionalLight(0xfff0dd, 0.6);
   dirLight.position.set(3, 6, 4);
   dirLight.castShadow = true;
-  dirLight.shadow.mapSize.width = 512;
-  dirLight.shadow.mapSize.height = 512;
-  dirLight.shadow.bias = -0.003;
+  dirLight.shadow.mapSize.width = 1024;
+  dirLight.shadow.mapSize.height = 1024;
+  dirLight.shadow.bias = -0.0015;
+  dirLight.shadow.radius = 4.0;
+  
+  // Ajustar frustum de cámara de sombras para maximizar calidad en el centro de la mesa
+  dirLight.shadow.camera.left = -4;
+  dirLight.shadow.camera.right = 4;
+  dirLight.shadow.camera.top = 4;
+  dirLight.shadow.camera.bottom = -4;
+  dirLight.shadow.camera.near = 1;
+  dirLight.shadow.camera.far = 15;
   scene.add(dirLight);
 
   const bulbFixtureGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.8, 8);
