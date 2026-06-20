@@ -1,7 +1,17 @@
 // AGALLUDO ROYALE v1.50: MOTOR 3D, PROCEDURAL AUDIO Y SISTEMA DE PROGRESO (NIVELES 1-150)
-const THREE = require('three');
-const CANNON = require('cannon');
-const { ipcRenderer } = require('electron');
+let THREE, CANNON, ipcRenderer;
+if (typeof require !== 'undefined') {
+  THREE = require('three');
+  CANNON = require('cannon');
+  try {
+    ipcRenderer = require('electron').ipcRenderer;
+  } catch (e) {
+    console.warn("Electron IPC no disponible.");
+  }
+} else {
+  THREE = window.THREE;
+  CANNON = window.CANNON;
+}
 
 // --- CONSTANTES DE PROGRESO Y DESBLOQUEOS (NIVELES 1 A 150) ---
 const Unlockables = {
