@@ -972,65 +972,85 @@ function applyDiceSkins() {
     let emissiveIntensity = 0;
     let transparent = false;
     let opacity = 1.0;
+    let clearcoat = 1.0;
+    let clearcoatRoughness = 0.05;
 
     switch (skinId) {
       case 'steel': // Marfil Pulido
-        roughness = 0.05;
-        metalness = 0.05;
+        roughness = 0.1;
+        metalness = 0.0;
+        clearcoat = 1.0;
+        clearcoatRoughness = 0.02;
         transparent = false;
         opacity = 1.0;
         break;
       case 'copper': // Ámbar Casino
         roughness = 0.02;
-        metalness = 0.10;
+        metalness = 0.05;
+        clearcoat = 1.0;
+        clearcoatRoughness = 0.01;
         transparent = true;
-        opacity = 0.82;
+        opacity = 0.85;
         break;
       case 'gold': // Oro de Montecarlo
-        roughness = 0.05;
-        metalness = 0.95;
+        roughness = 0.18;
+        metalness = 0.98;
+        clearcoat = 0.8;
+        clearcoatRoughness = 0.1;
         transparent = false;
         opacity = 1.0;
         break;
       case 'carbon': // Carbono Ébano
-        roughness = 0.15;
-        metalness = 0.12;
+        roughness = 0.4;
+        metalness = 0.2;
+        clearcoat = 0.4;
+        clearcoatRoughness = 0.2;
         transparent = false;
         opacity = 1.0;
         break;
       case 'neon': // Zafiro Neón
-        roughness = 0.02;
-        metalness = 0.10;
+        roughness = 0.01;
+        metalness = 0.05;
+        clearcoat = 1.0;
+        clearcoatRoughness = 0.01;
         transparent = true;
-        opacity = 0.82;
+        opacity = 0.85;
         emissiveColor = 0x00b0ff;
         emissiveIntensity = 0.35;
         break;
       case 'crimson': // Rubí Casino
         roughness = 0.02;
-        metalness = 0.10;
+        metalness = 0.05;
+        clearcoat = 1.0;
+        clearcoatRoughness = 0.01;
         transparent = true;
-        opacity = 0.82;
+        opacity = 0.85;
         break;
       case 'chrome': // Espejo Cromo
         roughness = 0.01;
         metalness = 1.0;
+        clearcoat = 1.0;
+        clearcoatRoughness = 0.01;
         transparent = false;
         opacity = 1.0;
         break;
       case 'obsidian': // Esmeralda Fosa
-        roughness = 0.02;
-        metalness = 0.10;
+        roughness = 0.01;
+        metalness = 0.05;
+        clearcoat = 1.0;
+        clearcoatRoughness = 0.01;
         transparent = true;
-        opacity = 0.82;
+        opacity = 0.85;
         emissiveColor = 0x2e7d32;
         emissiveIntensity = 0.15;
         break;
       case 'darkmatter': // Materia Amatista
-        roughness = 0.02;
-        metalness = 0.10;
+        roughness = 0.01;
+        metalness = 0.05;
+        clearcoat = 1.0;
+        clearcoatRoughness = 0.01;
         transparent = true;
-        opacity = 0.82;
+        opacity = 0.85;
         emissiveColor = 0x7b1fa2;
         emissiveIntensity = 0.25;
         break;
@@ -1052,6 +1072,8 @@ function applyDiceSkins() {
         d.mesh.material[i].opacity = opacity;
         d.mesh.material[i].emissive.setHex(emissiveColor);
         d.mesh.material[i].emissiveIntensity = emissiveIntensity;
+        d.mesh.material[i].clearcoat = clearcoat;
+        d.mesh.material[i].clearcoatRoughness = clearcoatRoughness;
         
         d.mesh.material[i].needsUpdate = true;
       }
@@ -1420,7 +1442,7 @@ function init3DAndPhysics() {
 
   DiceMesaConfig.forEach((cfg) => {
     const materialsArray = Array.from({ length: 6 }, () => 
-      new THREE.MeshStandardMaterial({ color: 0x444444, roughness: 0.4, metalness: 0.7 })
+      new THREE.MeshPhysicalMaterial({ color: 0x444444, roughness: 0.4, metalness: 0.7 })
     );
 
     const mesh = new THREE.Mesh(diceGeo, materialsArray);
