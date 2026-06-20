@@ -1147,12 +1147,12 @@ function updateLeaderboard() {
   
   sorted.forEach(p => {
     const li = document.createElement('li');
-    li.className = `leaderboard-item ${p.isEliminated ? 'eliminated' : ''} ${p.id === 'player' ? 'is-self' : ''}`;
+    li.className = `leader-item ${p.isEliminated ? 'eliminated' : ''} ${p.id === 'player' ? 'myself' : ''}`;
     
     const lockoutText = p.lockout > 0 ? ' ⚡' : '';
-    const nameSpan = `<span class="lbl-name">${p.name}${lockoutText}</span>`;
-    const securedSpan = `<span class="lbl-secured">${p.secured}</span>`;
-    const turnSpan = `<span class="lbl-turn">${p.isEliminated ? '---' : p.turn}</span>`;
+    const nameSpan = `<span class="leader-name">${p.name}${lockoutText}</span>`;
+    const securedSpan = `<span class="leader-score">${p.secured}</span>`;
+    const turnSpan = `<span class="leader-score temp">${p.isEliminated ? '---' : p.turn}</span>`;
     
     li.innerHTML = `${nameSpan}${securedSpan}${turnSpan}`;
     list.appendChild(li);
@@ -2558,8 +2558,8 @@ document.querySelectorAll('.face-selector-btn').forEach(btn => {
 
 // Lanzador rápido de botón
 document.getElementById('btn-player-roll').addEventListener('click', () => {
-  const rolling = tableDice.some(d => d.isRolling);
-  if (rolling) return;
+  const playerDice = tableDice.find(d => d.configId === 'player');
+  if (playerDice && playerDice.isRolling) return;
   const fx = (Math.random() - 0.5) * 5;
   const fz = -6.5 - Math.random() * 3.5;
   launchDiceFísica('player', fx, fz);
@@ -2567,8 +2567,8 @@ document.getElementById('btn-player-roll').addEventListener('click', () => {
 
 // Asegurar (Bank)
 document.getElementById('btn-player-bank').addEventListener('click', () => {
-  const rolling = tableDice.some(d => d.isRolling);
-  if (rolling) return;
+  const playerDice = tableDice.find(d => d.configId === 'player');
+  if (playerDice && playerDice.isRolling) return;
 
   const myself = players.find(p => p.id === 'player');
   if (myself.turn === 0) return;
