@@ -456,6 +456,21 @@ class SynthesizedSoundPlayer {
     osc.stop(this.ctx.currentTime + 0.03);
   }
 
+  playHover() {
+    this.init();
+    const osc = this.ctx.createOscillator();
+    const gain = this.ctx.createGain();
+    osc.type = 'sine';
+    osc.frequency.setValueAtTime(650, this.ctx.currentTime);
+    osc.frequency.exponentialRampToValueAtTime(800, this.ctx.currentTime + 0.04);
+    gain.gain.setValueAtTime(0.012, this.ctx.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.001, this.ctx.currentTime + 0.04);
+    osc.connect(gain);
+    gain.connect(this.ctx.destination);
+    osc.start();
+    osc.stop(this.ctx.currentTime + 0.04);
+  }
+
   playShieldActivate() {
     this.init();
     const t = this.ctx.currentTime;
@@ -2777,4 +2792,13 @@ window.addEventListener('DOMContentLoaded', () => {
   init3DAndPhysics();
   initLobby();
   updatePhysicsAndRender();
+
+  // Añadir efectos sonoros de hover a todos los botones interactivos
+  document.querySelectorAll('button, select, .tab-btn, .tuto-tab-btn, .face-selector-btn').forEach(btn => {
+    btn.addEventListener('mouseenter', () => {
+      if (!btn.disabled && !btn.classList.contains('cooldown')) {
+        soundPlayer.playHover();
+      }
+    });
+  });
 });
