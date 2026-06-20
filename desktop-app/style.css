@@ -1277,3 +1277,214 @@ body {
   background: rgba(255,0,0,0.15);
   color: var(--accent-color);
 }
+
+/* --- ESTILO: PANTALLA DE TUTORIAL --- */
+#tutorial-screen {
+  background: radial-gradient(circle at center, var(--bg-secondary) 0%, var(--bg-primary) 85%);
+  padding: 0;
+}
+
+.tutorial-container {
+  display: flex;
+  flex: 1;
+  height: calc(100vh - 60px - 60px);
+  background: rgba(10, 8, 7, 0.4);
+  backdrop-filter: blur(12px);
+  margin: 15px;
+  border: 1.5px solid var(--border-color);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.tutorial-sidebar {
+  width: 250px;
+  background: var(--bg-secondary);
+  border-right: 1.5px solid var(--border-color);
+  display: flex;
+  flex-direction: column;
+  padding: 15px;
+  gap: 8px;
+}
+
+.tuto-tab-btn {
+  background: var(--bg-primary);
+  border: 1px solid var(--border-color);
+  color: var(--text-secondary);
+  font-family: 'Outfit', sans-serif;
+  font-weight: 700;
+  font-size: 11px;
+  letter-spacing: 1px;
+  padding: 12px 16px;
+  text-align: left;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.tuto-tab-btn:hover, .tuto-tab-btn.active {
+  background: rgba(223, 184, 88, 0.1);
+  border-color: var(--accent-color);
+  color: var(--accent-color);
+  box-shadow: 0 0 10px var(--accent-glow);
+  text-shadow: 0 0 4px var(--accent-color);
+}
+
+.tutorial-content-pane {
+  flex: 1;
+  padding: 30px;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.tuto-pane {
+  display: none;
+  animation: crt-insert 0.25s ease-out;
+}
+
+.tuto-pane.active {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+}
+
+.tuto-pane h2 {
+  font-size: 20px;
+  color: var(--accent-color);
+  letter-spacing: 2px;
+  text-transform: uppercase;
+  text-shadow: 0 0 10px var(--accent-glow);
+}
+
+.tuto-divider {
+  width: 100%;
+  height: 2px;
+  background: linear-gradient(90deg, var(--accent-color), transparent);
+}
+
+.tuto-pane p, .tuto-pane ul, .tuto-pane ol {
+  font-size: 13.5px;
+  line-height: 1.6;
+  color: var(--text-primary);
+}
+
+.tuto-pane li {
+  margin-bottom: 8px;
+  margin-left: 20px;
+}
+
+.tuto-alert {
+  background: rgba(255, 255, 255, 0.03);
+  border-left: 4px solid var(--accent-color);
+  padding: 12px 18px;
+  border-radius: 4px;
+  font-size: 13px;
+  line-height: 1.5;
+  color: var(--text-primary);
+}
+
+.tuto-alert.warning {
+  border-color: #f44336;
+  background: rgba(244, 67, 54, 0.06);
+}
+
+.tuto-alert.info {
+  border-color: #2196f3;
+  background: rgba(33, 150, 243, 0.06);
+}
+
+.tuto-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 15px 0;
+  font-size: 12.5px;
+  background: rgba(0, 0, 0, 0.25);
+  border: 1px solid var(--border-color);
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+.tuto-table th, .tuto-table td {
+  padding: 10px 14px;
+  text-align: left;
+  border-bottom: 1px solid var(--border-color);
+}
+
+.tuto-table th {
+  background: var(--bg-tertiary);
+  color: var(--accent-color);
+  font-weight: 700;
+  text-transform: uppercase;
+  font-size: 10px;
+  letter-spacing: 1px;
+}
+
+.tuto-table tr:last-child td {
+  border-bottom: none;
+}
+
+.tuto-dice-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 15px;
+  margin: 10px 0;
+}
+
+.tuto-dice-box {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  padding: 15px;
+  border-radius: 8px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.tuto-dice-box.fatal {
+  border-color: #f44336;
+  background: rgba(244, 67, 54, 0.02);
+}
+
+.tuto-dice-box .dice-val {
+  font-size: 18px;
+  font-weight: 800;
+  color: var(--accent-color);
+}
+
+.tuto-dice-box.fatal .dice-val {
+  color: #ff3b30;
+  text-shadow: 0 0 10px rgba(255, 59, 48, 0.3);
+}
+
+.tuto-skills-detail {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.tuto-skill-card {
+  background: var(--bg-tertiary);
+  border: 1px solid var(--border-color);
+  padding: 15px;
+  border-radius: 8px;
+}
+
+.tuto-skill-card h3 {
+  font-size: 13px;
+  color: var(--accent-color);
+  margin-bottom: 6px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.tuto-skill-card .key {
+  font-family: monospace;
+  background: rgba(0, 0, 0, 0.4);
+  padding: 2px 6px;
+  border-radius: 4px;
+  font-size: 11px;
+  color: var(--text-secondary);
+}

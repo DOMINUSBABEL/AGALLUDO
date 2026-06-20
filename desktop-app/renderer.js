@@ -1941,6 +1941,11 @@ function initLobby() {
 function startGame() {
   soundPlayer.init();
 
+  // Si venimos de un estado final o el lobby, reiniciamos el torneo a Ronda 1
+  if (currentGameState === GameState.INTRO || currentGameState === GameState.GAME_OVER || currentGameState === GameState.VICTORY) {
+    eliminationRoundCount = 1;
+  }
+
   // Resetear habilidades tácticas del jugador al inicio de partida / ronda
   hasBrakeUsed = false;
   hasShieldUsed = false;
@@ -2007,57 +2012,68 @@ function startGame() {
   document.getElementById('sandbox-indicator').classList.add('hidden');
   document.getElementById('leaderboard-title').innerText = "TABLA DE SUPERVIVENCIA (16 JUG.)";
   
-  // 16 Jugadores
-  players = [
-    { id: 'player', name: 'TU (JUGADOR)', isBot: false, secured: 0, turn: 0, lockout: 0, isEliminated: false, hasBrakeUsed: false, hasShieldUsed: false, isShieldActive: false }
-  ];
+  if (eliminationRoundCount === 1) {
+    // 16 Jugadores
+    players = [
+      { id: 'player', name: 'TU (JUGADOR)', isBot: false, secured: 0, turn: 0, lockout: 0, isEliminated: false, hasBrakeUsed: false, hasShieldUsed: false, isShieldActive: false }
+    ];
 
-  const botPool = [
-    { name: 'CLINCH (BOT)', difficulty: 'BRONCE' },
-    { name: 'GAMBLE (BOT)', difficulty: 'ORO' },
-    { name: 'SLASHER (BOT)', difficulty: 'PLATA' },
-    { name: 'RAZOR (BOT)', difficulty: 'PLATA' },
-    { name: 'CYBORG (BOT)', difficulty: 'ORO' },
-    { name: 'VIPER (BOT)', difficulty: 'BRONCE' },
-    { name: 'APEX (BOT)', difficulty: 'PLATA' },
-    { name: 'BUMPER (BOT)', difficulty: 'BRONCE' },
-    { name: 'COPPER (BOT)', difficulty: 'BRONCE' },
-    { name: 'GEAR (BOT)', difficulty: 'PLATA' },
-    { name: 'SPIKE (BOT)', difficulty: 'PLATA' },
-    { name: 'VALVE (BOT)', difficulty: 'ORO' },
-    { name: 'FLANGE (BOT)', difficulty: 'BRONCE' },
-    { name: 'DEBRIS (BOT)', difficulty: 'PLATA' },
-    { name: 'RAGE (BOT)', difficulty: 'ORO' }
-  ];
+    const botPool = [
+      { name: 'CLINCH (BOT)', difficulty: 'BRONCE' },
+      { name: 'GAMBLE (BOT)', difficulty: 'ORO' },
+      { name: 'SLASHER (BOT)', difficulty: 'PLATA' },
+      { name: 'RAZOR (BOT)', difficulty: 'PLATA' },
+      { name: 'CYBORG (BOT)', difficulty: 'ORO' },
+      { name: 'VIPER (BOT)', difficulty: 'BRONCE' },
+      { name: 'APEX (BOT)', difficulty: 'PLATA' },
+      { name: 'BUMPER (BOT)', difficulty: 'BRONCE' },
+      { name: 'COPPER (BOT)', difficulty: 'BRONCE' },
+      { name: 'GEAR (BOT)', difficulty: 'PLATA' },
+      { name: 'SPIKE (BOT)', difficulty: 'PLATA' },
+      { name: 'VALVE (BOT)', difficulty: 'ORO' },
+      { name: 'FLANGE (BOT)', difficulty: 'BRONCE' },
+      { name: 'DEBRIS (BOT)', difficulty: 'PLATA' },
+      { name: 'RAGE (BOT)', difficulty: 'ORO' }
+    ];
 
-  for (let i = 0; i < 15; i++) {
-    players.push({
-      id: `bot_${i}`,
-      name: botPool[i].name,
-      isBot: true,
-      difficulty: botPool[i].difficulty,
-      secured: 0,
-      turn: 0,
-      lockout: 0,
-      isEliminated: false,
-      hasBrakeUsed: false,
-      hasShieldUsed: false,
-      isShieldActive: false
+    for (let i = 0; i < 15; i++) {
+      players.push({
+        id: `bot_${i}`,
+        name: botPool[i].name,
+        isBot: true,
+        difficulty: botPool[i].difficulty,
+        secured: 0,
+        turn: 0,
+        lockout: 0,
+        isEliminated: false,
+        hasBrakeUsed: false,
+        hasShieldUsed: false,
+        isShieldActive: false
+      });
+    }
+
+    // 4 en mesa visible (Mesa 0)
+    activeTablePlayers = [
+      players[0],
+      players[1],
+      players[2],
+      players[3]
+    ];
+  } else {
+    // Rondas 2+, mantenemos los puntajes secured, reseteamos estado de turno y stasis
+    players.forEach(p => {
+      p.turn = 0;
+      p.lockout = 0;
+      p.hasBrakeUsed = false;
+      p.hasShieldUsed = false;
+      p.isShieldActive = false;
     });
   }
 
-  // 4 en mesa visible (Mesa 0)
-  activeTablePlayers = [
-    players[0],
-    players[1],
-    players[2],
-    players[3]
-  ];
-
-  tableDice[0].activePlayerId = activeTablePlayers[0].id;
-  tableDice[1].activePlayerId = activeTablePlayers[1].id;
-  tableDice[2].activePlayerId = activeTablePlayers[2].id;
-  tableDice[3].activePlayerId = activeTablePlayers[3].id;
+  tableDice[0].activePlayerId = activeTablePlayers[0]?.id || null;
+  tableDice[1].activePlayerId = activeTablePlayers[1]?.id || null;
+  tableDice[2].activePlayerId = activeTablePlayers[2]?.id || null;
+  tableDice[3].activePlayerId = activeTablePlayers[3]?.id || null;
 
   applyDiceSkins();
   resetDiceToReady();
@@ -2066,7 +2082,7 @@ function startGame() {
   currentGameState = GameState.PLAYING;
   roundTimer = 30.0;
   
-  addLog(`⛓️ RONDA DEL TORNEO ${eliminationRoundCount} INICIADA. 16 JUGADORES COMPITIENDO EN BRACKETS.`, 'warn');
+  addLog(`⛓️ RONDA DEL TORNEO ${eliminationRoundCount} INICIADA. ${players.filter(p => !p.isEliminated).length} JUGADORES COMPITIENDO EN BRACKETS.`, 'warn');
   showScreen('play');
 
   document.getElementById('btn-player-roll').disabled = false;
@@ -2628,6 +2644,33 @@ window.addEventListener('keydown', (e) => {
     addLog(`⚙️ Teclado: Cara inicial de dado establecida en ${selectedInitialFace}`, 'system');
     resetDiceToReady();
   }
+});
+
+// Abrir y cerrar tutorial
+document.getElementById('btn-open-tutorial').addEventListener('click', () => {
+  soundPlayer.playClick();
+  showScreen('tutorial');
+});
+
+document.getElementById('btn-close-tutorial').addEventListener('click', () => {
+  soundPlayer.playClick();
+  showScreen('intro');
+});
+
+// Pestañas del tutorial estructurado
+document.querySelectorAll('.tuto-tab-btn').forEach(btn => {
+  btn.addEventListener('click', (e) => {
+    soundPlayer.playClick();
+    document.querySelectorAll('.tuto-tab-btn').forEach(b => b.classList.remove('active'));
+    document.querySelectorAll('.tuto-pane').forEach(p => p.classList.remove('active'));
+
+    e.currentTarget.classList.add('active');
+    const targetId = e.currentTarget.getAttribute('data-tuto');
+    const targetPane = document.getElementById(targetId);
+    if (targetPane) {
+      targetPane.classList.add('active');
+    }
+  });
 });
 
 // Inicialización de arranque

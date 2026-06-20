@@ -70,6 +70,7 @@
           </div>
 
           <button id="btn-start-game" class="btn btn-primary btn-block">INGRESAR A LA FOSA</button>
+          <button id="btn-open-tutorial" class="btn btn-action btn-block" style="margin-top: 10px;">CÓMO JUGAR (TUTORIAL)</button>
         </div>
 
         <!-- Panel 2: Personalización y Desbloqueos (Niveles 1-150) -->
@@ -265,6 +266,146 @@
       <div class="btn-row">
         <button id="btn-victory-retry" class="btn btn-primary">JUGAR OTRA VEZ</button>
         <button id="btn-victory-lobby" class="btn btn-default">VOLVER AL MENU</button>
+      </div>
+    </div>
+
+    <!-- PANTALLA DE TUTORIAL ESTRUCTURADO -->
+    <div id="tutorial-screen" class="screen">
+      <header class="header-console">
+        <div class="header-status">
+          <span>MANUAL DE OPERACIONES | PROTOCOLO DE LA FOSA</span>
+        </div>
+        <div class="header-actions">
+          <button id="btn-close-tutorial" class="btn btn-primary">VOLVER AL MENU</button>
+        </div>
+      </header>
+
+      <div class="tutorial-container">
+        <div class="tutorial-sidebar">
+          <button class="tuto-tab-btn active" data-tuto="tuto-objetivo">1. Objetivo Central</button>
+          <button class="tuto-tab-btn" data-tuto="tuto-lanzamiento">2. El Lanzamiento</button>
+          <button class="tuto-tab-btn" data-tuto="tuto-asegurar">3. Asegurar Puntos (Bank)</button>
+          <button class="tuto-tab-btn" data-tuto="tuto-habilidades">4. Habilidades Tácticas</button>
+          <button class="tuto-tab-btn" data-tuto="tuto-radiacion">5. Radiación del Foso</button>
+        </div>
+
+        <div class="tutorial-content-pane">
+          <!-- Contenido 1: Objetivo -->
+          <div id="tuto-objetivo" class="tuto-pane active">
+            <h2>1. OBJETIVO DEL JUEGO</h2>
+            <div class="tuto-divider"></div>
+            <p>Agalludo Royale es un torneo competitivo de dados en formato **Battle Royale** contra otros 15 reclusos controlados por IA.</p>
+            <div class="tuto-alert warning">
+              <strong>REGLA DE SUPERVIVENCIA:</strong> Cada ronda dura exactamente 30 segundos. Cuando el temporizador llega a cero, el jugador con el puntaje asegurado más bajo en la mesa es <strong>descargado físicamente al foso</strong> (eliminado).
+            </div>
+            <p>El torneo consta de múltiples rondas clasificatorias con el siguiente formato de eliminación:</p>
+            <table class="tuto-table">
+              <thead>
+                <tr>
+                  <th>Ronda</th>
+                  <th>Jugadores Vivos</th>
+                  <th>Eliminados en la Ronda</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Ronda 1</td>
+                  <td>16 Jugadores</td>
+                  <td>4 Jugadores (el peor de cada mesa de 4)</td>
+                </tr>
+                <tr>
+                  <td>Ronda 2</td>
+                  <td>12 Jugadores</td>
+                  <td>3 Jugadores</td>
+                </tr>
+                <tr>
+                  <td>Ronda 3</td>
+                  <td>9 Jugadores</td>
+                  <td>2 Jugadores</td>
+                </tr>
+                <tr>
+                  <td>Ronda 4</td>
+                  <td>7 Jugadores</td>
+                  <td>2 Jugadores</td>
+                </tr>
+                <tr>
+                  <td>Final (R5+)</td>
+                  <td>5 Jugadores</td>
+                  <td>1 Jugador por ronda hasta la Victoria</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>Para ganar, debes ser el <strong>último superviviente en pie</strong> en la mesa final.</p>
+          </div>
+
+          <!-- Contenido 2: El Lanzamiento -->
+          <div id="tuto-lanzamiento" class="tuto-pane">
+            <h2>2. MECÁNICA DE LANZAMIENTO</h2>
+            <div class="tuto-divider"></div>
+            <p>En tu turno operativo, puedes lanzar tu dado de dos maneras:</p>
+            <ul>
+              <li><strong>Control Táctico por Ratón (Arrastrar):</strong> Mantén presionado el clic izquierdo del ratón sobre tu dado (en el área de salida inferior), arrástralo hacia atrás para apuntar y calcular la fuerza, y suéltalo para lanzarlo por la mesa.</li>
+              <li><strong>Lanzamiento Rápido:</strong> Haz clic en el botón verde <strong>LANZAR DADO</strong> en el panel de control para un tiro estándar con fuerza aleatoria controlada.</li>
+            </ul>
+            <p>Al detenerse el dado, el número de la cara superior se añade a tu <strong>Acumulado Turno</strong>:</p>
+            <div class="tuto-dice-grid">
+              <div class="tuto-dice-box">
+                <span class="dice-val">2 - 6</span>
+                <p>Suma el valor directamente a tu acumulado actual del turno. Puedes volver a lanzar tantas veces como quieras para acumular más puntos.</p>
+              </div>
+              <div class="tuto-dice-box fatal">
+                <span class="dice-val">1 Mortal</span>
+                <p>¡Peligro! Si el dado muestra un 1, tu acumulado del turno actual se evapora instantáneamente (se reduce a 0) y entras en <strong>Lockout (estasis) durante 3 segundos</strong> en los que no puedes realizar ninguna acción.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contenido 3: Asegurar Puntos -->
+          <div id="tuto-asegurar" class="tuto-pane">
+            <h2>3. ASEGURAR PUNTOS (BANK)</h2>
+            <div class="tuto-divider"></div>
+            <p>Dado que lanzar consecutivamente aumenta el riesgo de sacar un <strong>1 Mortal</strong> y perder todo lo acumulado, debes saber cuándo detenerte y asegurar tus ganancias.</p>
+            <p>Al hacer clic en el botón **ASEGURAR (BANK)**:</p>
+            <ol>
+              <li>Los puntos de tu **Acumulado Turno** se transfieren permanentemente a tu **Total Asegurado** del torneo.</li>
+              <li>Tu acumulado del turno se reinicia a 0.</li>
+              <li>Tu dado se restablece a la zona de salida listo para el siguiente turno.</li>
+            </ol>
+            <div class="tuto-alert info">
+              <strong>PUNTAJES ACUMULATIVOS:</strong> ¡Tus puntos asegurados se acumulan y se siguen sumando entre las rondas del torneo! Cada punto que asegures en la Ronda 1 te dará una ventaja permanente en las rondas clasificatorias posteriores.
+            </div>
+            <p><strong>Estrategia Clave:</strong> No seas demasiado codicioso. Asegurar montos medianos (entre 10 y 14 puntos) de forma constante es mucho más seguro que intentar tiros arriesgados que puedan dejarte en lockout.</p>
+          </div>
+
+          <!-- Contenido 4: Habilidades Tácticas -->
+          <div id="tuto-habilidades" class="tuto-pane">
+            <h2>4. HABILIDADES TÁCTICAS OPERATIVAS</h2>
+            <div class="tuto-divider"></div>
+            <p>Dispones de dos ranuras de habilidades cargadas de forma gratuita al inicio de cada ronda para manipular el azar físico a tu favor:</p>
+            <div class="tuto-skills-detail">
+              <div class="tuto-skill-card">
+                <h3>💥 FRENO MAGNÉTICO <span class="key">[ESPACIO]</span></h3>
+                <p>Detiene el dado de golpe mientras está en movimiento en la mesa. Úsalo cuando veas que el dado va a colisionar con una esquina peligrosa o cuando esté girando sobre una cara favorable (5 o 6) para congelar el valor inmediatamente.</p>
+              </div>
+              <div class="tuto-skill-card">
+                <h3>🛡️ ESCUDO DE FOSA <span class="key">[C]</span></h3>
+                <p>Activa una barrera de energía protectora en tu turno. Si el siguiente tiro resulta en un <strong>1 Mortal</strong>, el escudo absorberá el impacto, guardará automáticamente tu acumulado del turno en tu Total Asegurado (Bank automático) y evitará la stasis de lockout.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contenido 5: Radiación del Foso -->
+          <div id="tuto-radiacion" class="tuto-pane">
+            <h2>5. RADIACIÓN DEL FOSO (TEMPORIZADOR CRÍTICO)</h2>
+            <div class="tuto-divider"></div>
+            <p>El foso es inestable y, a medida que la ronda se acerca a su fin, las condiciones ambientales se vuelven hostiles:</p>
+            <ul>
+              <li><strong>Peligro a los 7 Segundos:</strong> Cuando el temporizador cae por debajo de los 7.0 segundos restantes de la ronda, la consola parpadea en rojo y escucharás latidos de advertencia.</li>
+              <li><strong>Drenaje de Puntos:</strong> La radiación del foso comenzará a drenar aleatoriamente puntos de tu **Total Asegurado** permanente a un ritmo constante de 1 punto por tick.</li>
+            </ul>
+            <p><strong>Estrategia Operativa:</strong> No guardes puntos al final de la ronda si el temporizador es bajo; intenta realizar tus tiradas y asegurar antes de que se active el drenaje de radiación.</p>
+          </div>
+        </div>
       </div>
     </div>
   </div>
