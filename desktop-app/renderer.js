@@ -6,28 +6,28 @@ const { ipcRenderer } = require('electron');
 // --- CONSTANTES DE PROGRESO Y DESBLOQUEOS (NIVELES 1 A 150) ---
 const Unlockables = {
   diceSkins: [
-    { id: 'steel', name: 'Acero Templado', level: 1, desc: 'Dado estándar de fosa.' },
-    { id: 'copper', name: 'Cobre Rústico', level: 5, desc: 'Dado de bronce patinado.' },
-    { id: 'gold', name: 'Oro Pulido', level: 15, desc: 'dado de oro de alta reflectividad.' },
-    { id: 'carbon', name: 'Carbono Militar', level: 30, desc: 'Fibra de carbono mate.' },
-    { id: 'neon', name: 'Holograma Neón', level: 45, desc: 'Dado de cristal que brilla en rosa/cian.' },
-    { id: 'crimson', name: 'Sangre Carmesí', level: 60, desc: 'Rojo metálico profundo.' },
-    { id: 'chrome', name: 'Cromo Líquido', level: 80, desc: 'Dado plateado de reflexión pura.' },
-    { id: 'obsidian', name: 'Lava de Obsidiana', level: 110, desc: 'Roca volcánica con puntos de magma.' },
-    { id: 'darkmatter', name: 'Materia Oscura', level: 150, desc: 'Dado cósmico de color morado estelar.' }
+    { id: 'steel', name: 'Marfil Pulido', level: 1, desc: 'Clásico dado de marfil de alta gama.' },
+    { id: 'copper', name: 'Ámbar Casino', level: 5, desc: 'Acrílico ámbar semi-transparente brillante.' },
+    { id: 'gold', name: 'Oro de Montecarlo', level: 15, desc: 'Dado de oro puro con brillo de espejo.' },
+    { id: 'carbon', name: 'Carbono Ébano', level: 30, desc: 'Dado de ébano pulido con detalles de fibra.' },
+    { id: 'neon', name: 'Zafiro Neón', level: 45, desc: 'Cristal de zafiro luminoso y transparente.' },
+    { id: 'crimson', name: 'Rubí Casino', level: 60, desc: 'El clásico acrílico rojo transparente de casino.' },
+    { id: 'chrome', name: 'Espejo Cromo', level: 80, desc: 'Cromo líquido con reflejos de mesa perfectos.' },
+    { id: 'obsidian', name: 'Esmeralda Fosa', level: 110, desc: 'Acrílico verde esmeralda con puntos dorados.' },
+    { id: 'darkmatter', name: 'Materia Amatista', level: 150, desc: 'Cristal cósmico amatista ultra-premium.' }
   ],
   tables: [
-    { id: 'oak', name: 'Madera de Roble', level: 1, desc: 'Mesa clásica con fricción media.', friction: 0.65, restitution: 0.48, gravity: -17.0 },
-    { id: 'felt', name: 'Fieltro de Casino', level: 20, desc: 'Fieltro verde con alta fricción.', friction: 0.85, restitution: 0.35, gravity: -17.0 },
-    { id: 'ironplate', name: 'Placa de Acero', level: 40, desc: 'Metal pesado con gran rebote.', friction: 0.50, restitution: 0.65, gravity: -17.0 },
-    { id: 'marble', name: 'Mármol del Búnker', level: 70, desc: 'Piedra lisa resbaladiza y caótica.', friction: 0.12, restitution: 0.45, gravity: -17.0 },
-    { id: 'plasma', name: 'Red de Plasma', level: 120, desc: 'Gravedad alterada y red luminosa.', friction: 0.55, restitution: 0.55, gravity: -8.0 }
+    { id: 'oak', name: 'Tapete Burdeos', level: 1, desc: 'Fieltro rojo borgoña con marco de roble caoba.', friction: 0.65, restitution: 0.48, gravity: -17.0 },
+    { id: 'felt', name: 'Verde Casino', level: 20, desc: 'El clásico tapete verde de dados de casino.', friction: 0.85, restitution: 0.35, gravity: -17.0 },
+    { id: 'ironplate', name: 'Acero Búnker', level: 40, desc: 'Tapete de acero con líneas láser luminiscentes.', friction: 0.50, restitution: 0.65, gravity: -17.0 },
+    { id: 'marble', name: 'Mármol Tribunal', level: 70, desc: 'Lujoso mármol blanco de Carrara con líneas de oro.', friction: 0.12, restitution: 0.45, gravity: -17.0 },
+    { id: 'plasma', name: 'Casino Virtual', level: 120, desc: 'Tapete holográfico con campos de fuerza de plasma.', friction: 0.55, restitution: 0.55, gravity: -8.0 }
   ],
   uiThemes: [
     { id: 'cyan', name: 'Cian Criogénico', level: 1, desc: 'Tema azul futurista.' },
     { id: 'amber', name: 'Ámbar de Seguridad', level: 15, desc: 'Tema naranja industrial.' },
     { id: 'red', name: 'Industrial Carmesí', level: 35, desc: 'Tema rojo de fosa.' },
-    { id: 'green', name: 'Radiactivo', level: 90, desc: 'Tema verde neón fosforescente.' }
+    { id: 'green', name: 'Montecarlo Verde/Oro', level: 90, desc: 'Lujoso tema de casino en verde y dorado.' }
   ],
   titles: [
     { id: 'reclus', name: 'Recluso de la Fosa', level: 1 },
@@ -583,15 +583,15 @@ let lastDragTime = 0;
 
 // Skin colors for dynamic canvases
 const SkinColors = {
-  steel: { primary: '#4f5b66', secondary: '#343d46', dots: '#00bcd4' },
-  copper: { primary: '#b87333', secondary: '#8b5a2b', dots: '#ff7f50' },
-  gold: { primary: '#ffd700', secondary: '#b8860b', dots: '#ffffff' },
-  carbon: { primary: '#2b2b2b', secondary: '#1c1c1c', dots: '#ff3b30' },
-  neon: { primary: '#ff007f', secondary: '#00f0ff', dots: '#39ff14' },
-  crimson: { primary: '#dc143c', secondary: '#8b0000', dots: '#ffffff' },
-  chrome: { primary: '#e6e6e6', secondary: '#808080', dots: '#00e5ff' },
-  obsidian: { primary: '#151515', secondary: '#2a1a1a', dots: '#ff3d00' },
-  darkmatter: { primary: '#4a154b', secondary: '#0c020c', dots: '#e040fb' }
+  steel: { primary: '#fffdf6', secondary: '#f3efdf', dots: '#111111' }, // Marfil
+  copper: { primary: '#ff9800', secondary: '#e65100', dots: '#ffffff' }, // Ámbar
+  gold: { primary: '#ffd700', secondary: '#b8860b', dots: '#ffffff' }, // Oro
+  carbon: { primary: '#1c1c1c', secondary: '#0f0f0f', dots: '#d32f2f' }, // Carbono
+  neon: { primary: '#00b0ff', secondary: '#0043ca', dots: '#39ff14' }, // Zafiro Neón
+  crimson: { primary: '#d32f2f', secondary: '#8e0000', dots: '#ffffff' }, // Rubí Casino
+  chrome: { primary: '#ffffff', secondary: '#b0bec5', dots: '#00e5ff' }, // Cromo
+  obsidian: { primary: '#2e7d32', secondary: '#1b5e20', dots: '#ffd700' }, // Esmeralda
+  darkmatter: { primary: '#7b1fa2', secondary: '#4a0072', dots: '#ffffff' } // Amatista
 };
 
 // --- HELPERS Y FUNCIONES FALTANTES ---
@@ -709,9 +709,9 @@ function createDiceFaceTexture(value, skinId) {
     }
   }
 
-  // Magma Obsidian
+  // Vetaduras doradas para Esmeralda Fosa (obsidian)
   if (skinId === 'obsidian') {
-    ctx.strokeStyle = '#ff3d00';
+    ctx.strokeStyle = 'rgba(255, 215, 0, 0.45)';
     ctx.lineWidth = 1.5;
     ctx.beginPath();
     ctx.moveTo(10, 20); ctx.lineTo(40, 50); ctx.lineTo(20, 80); ctx.lineTo(60, 110);
@@ -749,95 +749,207 @@ function createDiceFaceTexture(value, skinId) {
 
 function createTableTexture(styleId) {
   const canvas = document.createElement('canvas');
-  canvas.width = 512;
-  canvas.height = 512;
+  canvas.width = 1024;
+  canvas.height = 1365; // Proporción exacta 6:8 para coincidir con la mesa 3D
   const ctx = canvas.getContext('2d');
 
-  switch (styleId) {
-    case 'oak':
-      ctx.fillStyle = '#3e271c';
-      ctx.fillRect(0, 0, 512, 512);
-      ctx.strokeStyle = '#2b1b13';
-      ctx.lineWidth = 2.0;
-      for (let i = 0; i < 512; i += 12) {
-        ctx.beginPath();
-        let y = 0;
-        ctx.moveTo(0, i);
-        while (y < 512) {
-          y += 10;
-          let offset = Math.sin(y * 0.05 + i) * 6;
-          ctx.lineTo(y, i + offset);
-        }
-        ctx.stroke();
-      }
-      break;
-    case 'felt':
-      ctx.fillStyle = '#1b5e20';
-      ctx.fillRect(0, 0, 512, 512);
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
-      for (let i = 0; i < 4000; i++) {
-        let rx = Math.random() * 512;
-        let ry = Math.random() * 512;
-        ctx.fillRect(rx, ry, 2, 2);
-      }
-      ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
-      for (let i = 0; i < 4000; i++) {
-        let rx = Math.random() * 512;
-        let ry = Math.random() * 512;
-        ctx.fillRect(rx, ry, 2, 2);
-      }
-      break;
-    case 'ironplate':
-      ctx.fillStyle = '#455a64';
-      ctx.fillRect(0, 0, 512, 512);
-      ctx.strokeStyle = '#263238';
-      ctx.lineWidth = 3.0;
-      for (let i = 0; i <= 512; i += 64) {
-        ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 512); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(512, i); ctx.stroke();
-      }
-      ctx.fillStyle = '#37474f';
-      for (let x = 32; x < 512; x += 64) {
-        for (let y = 32; y < 512; y += 64) {
-          ctx.beginPath(); ctx.arc(x, y, 4, 0, Math.PI * 2); ctx.fill();
-        }
-      }
-      break;
-    case 'marble':
-      ctx.fillStyle = '#e0e0e0';
-      ctx.fillRect(0, 0, 512, 512);
-      ctx.strokeStyle = '#9e9e9e';
-      ctx.lineWidth = 1.5;
-      for (let i = 0; i < 15; i++) {
-        ctx.beginPath();
-        let sx = Math.random() * 512;
-        ctx.moveTo(sx, 0);
-        let currX = sx;
-        for (let y = 0; y <= 512; y += 20) {
-          currX += (Math.random() - 0.5) * 18;
-          ctx.lineTo(currX, y);
-        }
-        ctx.stroke();
-      }
-      break;
-    case 'plasma':
-      ctx.fillStyle = '#0a0c10';
-      ctx.fillRect(0, 0, 512, 512);
-      ctx.strokeStyle = '#00f0ff';
-      ctx.shadowColor = '#00f0ff';
-      ctx.shadowBlur = 8;
-      ctx.lineWidth = 1.0;
-      for (let i = 0; i <= 512; i += 40) {
-        ctx.beginPath(); ctx.moveTo(i, 0); ctx.lineTo(i, 512); ctx.stroke();
-        ctx.beginPath(); ctx.moveTo(0, i); ctx.lineTo(512, i); ctx.stroke();
-      }
-      break;
+  let feltColor = '#0d4722'; 
+  let lineColor = '#dfb858'; 
+  let textColor = '#ffffff'; 
+  let accentColor = '#dfb858'; 
+  let casinoLabel = 'FOSA CASINO ROYAL';
+  
+  if (styleId === 'felt') {
+    feltColor = '#093a1c';
+    lineColor = '#dfb858';
+    textColor = '#ffffff';
+    accentColor = '#dfb858';
+    casinoLabel = 'FOSA CASINO ROYAL';
+  } else if (styleId === 'oak') {
+    feltColor = '#4a0d0d'; // Borgoña elegante
+    lineColor = '#dfb858';
+    textColor = '#ffebc2';
+    accentColor = '#dfb858';
+    casinoLabel = 'SALÓN DE ROBLE';
+  } else if (styleId === 'ironplate') {
+    feltColor = '#1a2332'; // Gris/azul industrial de alta gama
+    lineColor = '#00e5ff';
+    textColor = '#ffffff';
+    accentColor = '#ff3b30';
+    casinoLabel = 'BÚNKER INDUSTRIAL';
+  } else if (styleId === 'marble') {
+    feltColor = '#f2f4f7';
+    lineColor = '#b8860b';
+    textColor = '#1a1a1a';
+    accentColor = '#8b0000';
+    casinoLabel = 'TRIBUNAL DE MÁRMOL';
+  } else if (styleId === 'plasma') {
+    feltColor = '#06070a';
+    lineColor = '#ff007f';
+    textColor = '#ffffff';
+    accentColor = '#39ff14';
+    casinoLabel = 'RED CASINO HOLOGRÁFICO';
   }
 
+  // Pintar fondo
+  ctx.fillStyle = feltColor;
+  ctx.fillRect(0, 0, 1024, 1365);
+
+  // Dibujar textura de fieltro o venas de mármol
+  if (styleId === 'marble') {
+    ctx.strokeStyle = 'rgba(150, 150, 150, 0.22)';
+    ctx.lineWidth = 2.0;
+    for (let j = 0; j < 15; j++) {
+      ctx.beginPath();
+      let sx = Math.random() * 1024;
+      ctx.moveTo(sx, 0);
+      let currX = sx;
+      for (let y = 0; y <= 1365; y += 40) {
+        currX += (Math.random() - 0.5) * 60;
+        ctx.lineTo(currX, y);
+      }
+      ctx.stroke();
+    }
+  } else {
+    // Ruido velvet sutil
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+    for (let i = 0; i < 15000; i++) {
+      ctx.fillRect(Math.random() * 1024, Math.random() * 1365, 2, 2);
+    }
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.03)';
+    for (let i = 0; i < 15000; i++) {
+      ctx.fillRect(Math.random() * 1024, Math.random() * 1365, 2, 2);
+    }
+  }
+
+  // Líneas exteriores dobles de mesa de casino
+  ctx.strokeStyle = lineColor;
+  ctx.lineWidth = 4;
+  ctx.strokeRect(20, 20, 984, 1325);
+  ctx.lineWidth = 1.5;
+  ctx.strokeRect(26, 26, 972, 1313);
+
+  // Funciones de escritura
+  const drawText = (txt, x, y, size, isBold = true) => {
+    ctx.fillStyle = textColor;
+    ctx.font = `${isBold ? 'bold' : ''} ${size}px Outfit, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(txt, x, y);
+  };
+  const drawAccentText = (txt, x, y, size, isBold = true) => {
+    ctx.fillStyle = accentColor;
+    ctx.font = `${isBold ? 'bold' : ''} ${size}px Outfit, sans-serif`;
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'middle';
+    ctx.fillText(txt, x, y);
+  };
+
+  // Círculo central decorativo
+  ctx.save();
+  ctx.translate(512, 682.5);
+  ctx.strokeStyle = lineColor;
+  ctx.lineWidth = 3;
+  ctx.beginPath(); ctx.arc(0, 0, 90, 0, Math.PI * 2); ctx.stroke();
+  ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.arc(0, 0, 96, 0, Math.PI * 2); ctx.stroke();
+  drawAccentText(casinoLabel, 0, -25, 20);
+  drawText("AGALLUDO", 0, 5, 26);
+  drawText("ROYALE", 0, 32, 14, false);
+  ctx.restore();
+
+  // Apuestas Centrales (Prop Bets / Hardways)
+  ctx.strokeRect(200, 612.5, 624, 140);
+  ctx.beginPath();
+  ctx.moveTo(356, 612.5); ctx.lineTo(356, 752.5);
+  ctx.moveTo(512, 612.5); ctx.lineTo(512, 752.5);
+  ctx.moveTo(668, 612.5); ctx.lineTo(668, 752.5);
+  ctx.stroke();
+
+  // Dados miniaturas para Hardways
+  const drawMiniDice = (x, y, v1, v2) => {
+    const drawFace = (dx, dy, val) => {
+      ctx.fillStyle = accentColor;
+      ctx.fillRect(dx - 12, dy - 12, 24, 24);
+      ctx.fillStyle = feltColor;
+      const pips = {
+        1: [[0, 0]],
+        2: [[-6, -6], [6, 6]],
+        3: [[-6, -6], [0, 0], [6, 6]],
+        4: [[-6, -6], [-6, 6], [6, -6], [6, 6]],
+        5: [[-6, -6], [-6, 6], [0, 0], [6, -6], [6, 6]],
+        6: [[-6, -6], [-6, 0], [-6, 6], [6, -6], [6, 0], [6, 6]]
+      };
+      (pips[val] || []).forEach(([px, py]) => {
+        ctx.beginPath(); ctx.arc(dx + px, dy + py, 2.5, 0, Math.PI * 2); ctx.fill();
+      });
+    };
+    drawFace(x - 15, y, v1);
+    drawFace(x + 15, y, v2);
+  };
+
+  drawMiniDice(278, 660, 2, 2); drawText("7 TO 1", 278, 715, 14);
+  drawMiniDice(434, 660, 3, 3); drawText("9 TO 1", 434, 715, 14);
+  drawMiniDice(590, 660, 4, 4); drawText("9 TO 1", 590, 715, 14);
+  drawMiniDice(746, 660, 5, 5); drawText("7 TO 1", 746, 715, 14);
+
+  // C y E círculos
+  const drawCE = (x, y) => {
+    ctx.beginPath(); ctx.arc(x, y - 25, 20, 0, Math.PI * 2); ctx.stroke();
+    drawText("C", x, y - 25, 18);
+    ctx.beginPath(); ctx.arc(x, y + 25, 20, 0, Math.PI * 2); ctx.stroke();
+    drawAccentText("E", x, y + 25, 18);
+  };
+  drawCE(110, 682.5);
+  drawCE(914, 682.5);
+
+  // Grillas extremos (Top & Bottom)
+  const drawExtremity = (startY, direction) => {
+    const offset = (val) => startY + val * direction;
+
+    // Números principales
+    const gridY1 = offset(40);
+    const gridY2 = offset(130);
+    ctx.strokeRect(132, Math.min(gridY1, gridY2), 760, 90);
+    for (let i = 1; i < 6; i++) {
+      const gx = 132 + i * 126.6;
+      ctx.beginPath(); ctx.moveTo(gx, gridY1); ctx.lineTo(gx, gridY2); ctx.stroke();
+    }
+    const textY = offset(85);
+    const nums = ["4", "5", "SIX", "8", "NINE", "10"];
+    for (let i = 0; i < 6; i++) {
+      drawText(nums[i], 132 + i * 126.6 + 63.3, textY, 32);
+    }
+
+    // COME box
+    ctx.strokeRect(132, Math.min(offset(150), offset(220)), 760, 70);
+    drawText("COME", 512, offset(185), 36);
+
+    // FIELD box
+    ctx.strokeRect(132, Math.min(offset(240), offset(360)), 760, 120);
+    drawAccentText("FIELD", 512, offset(275), 24);
+    ctx.beginPath(); ctx.arc(220, offset(315), 20, 0, Math.PI * 2); ctx.stroke();
+    drawText("2", 220, offset(315), 18);
+    ctx.beginPath(); ctx.arc(804, offset(315), 20, 0, Math.PI * 2); ctx.stroke();
+    drawText("12", 804, offset(315), 18);
+    drawText("3 • 4 • 9 • 10 • 11", 512, offset(320), 22);
+
+    // PASS LINE
+    ctx.strokeRect(132, Math.min(offset(380), offset(430)), 760, 50);
+    drawText("PASS LINE", 512, offset(405), 22);
+
+    // DON'T PASS BAR
+    ctx.strokeRect(132, Math.min(offset(445), offset(490)), 760, 45);
+    drawAccentText("DON'T PASS BAR", 512, offset(467), 16);
+  };
+
+  drawExtremity(20, 1);
+  drawExtremity(1345, -1);
+
   const texture = new THREE.CanvasTexture(canvas);
-  texture.wrapS = THREE.RepeatWrapping;
-  texture.wrapT = THREE.RepeatWrapping;
-  texture.repeat.set(1.5, 2.0);
+  texture.wrapS = THREE.ClampToEdgeWrapping;
+  texture.wrapT = THREE.ClampToEdgeWrapping;
+  texture.repeat.set(1.0, 1.0);
   return texture;
 }
 
@@ -858,49 +970,69 @@ function applyDiceSkins() {
     let metalness = 0.7;
     let emissiveColor = 0x000000;
     let emissiveIntensity = 0;
+    let transparent = false;
+    let opacity = 1.0;
 
     switch (skinId) {
-      case 'steel':
-        roughness = 0.55;
-        metalness = 0.8;
+      case 'steel': // Marfil Pulido
+        roughness = 0.05;
+        metalness = 0.05;
+        transparent = false;
+        opacity = 1.0;
         break;
-      case 'copper':
-        roughness = 0.25;
+      case 'copper': // Ámbar Casino
+        roughness = 0.02;
+        metalness = 0.10;
+        transparent = true;
+        opacity = 0.82;
+        break;
+      case 'gold': // Oro de Montecarlo
+        roughness = 0.05;
         metalness = 0.95;
+        transparent = false;
+        opacity = 1.0;
         break;
-      case 'gold':
-        roughness = 0.08;
-        metalness = 0.98;
-        break;
-      case 'carbon':
-        roughness = 0.85;
-        metalness = 0.15;
-        break;
-      case 'neon':
-        roughness = 0.1;
-        metalness = 0.2;
-        emissiveColor = 0xff007f;
-        emissiveIntensity = 0.55;
-        break;
-      case 'crimson':
-        roughness = 0.2;
-        metalness = 0.85;
-        break;
-      case 'chrome':
-        roughness = 0.01;
-        metalness = 1.0;
-        break;
-      case 'obsidian':
+      case 'carbon': // Carbono Ébano
         roughness = 0.15;
-        metalness = 0.3;
-        emissiveColor = 0xff3d00;
+        metalness = 0.12;
+        transparent = false;
+        opacity = 1.0;
+        break;
+      case 'neon': // Zafiro Neón
+        roughness = 0.02;
+        metalness = 0.10;
+        transparent = true;
+        opacity = 0.82;
+        emissiveColor = 0x00b0ff;
         emissiveIntensity = 0.35;
         break;
-      case 'darkmatter':
-        roughness = 0.45;
-        metalness = 0.65;
-        emissiveColor = 0xe040fb;
-        emissiveIntensity = 0.45;
+      case 'crimson': // Rubí Casino
+        roughness = 0.02;
+        metalness = 0.10;
+        transparent = true;
+        opacity = 0.82;
+        break;
+      case 'chrome': // Espejo Cromo
+        roughness = 0.01;
+        metalness = 1.0;
+        transparent = false;
+        opacity = 1.0;
+        break;
+      case 'obsidian': // Esmeralda Fosa
+        roughness = 0.02;
+        metalness = 0.10;
+        transparent = true;
+        opacity = 0.82;
+        emissiveColor = 0x2e7d32;
+        emissiveIntensity = 0.15;
+        break;
+      case 'darkmatter': // Materia Amatista
+        roughness = 0.02;
+        metalness = 0.10;
+        transparent = true;
+        opacity = 0.82;
+        emissiveColor = 0x7b1fa2;
+        emissiveIntensity = 0.25;
         break;
     }
 
@@ -916,6 +1048,8 @@ function applyDiceSkins() {
         // Aplicar propiedades PBR en tiempo real
         d.mesh.material[i].roughness = roughness;
         d.mesh.material[i].metalness = metalness;
+        d.mesh.material[i].transparent = transparent;
+        d.mesh.material[i].opacity = opacity;
         d.mesh.material[i].emissive.setHex(emissiveColor);
         d.mesh.material[i].emissiveIntensity = emissiveIntensity;
         
@@ -1058,6 +1192,47 @@ function updateGhostTrail() {
   ghostLine.geometry.attributes.position.needsUpdate = true;
 }
 
+function createChipStack(px, pz, count, colorHex) {
+  const chipRadius = 0.16;
+  const chipHeight = 0.03;
+  const group = new THREE.Group();
+  
+  const chipGeo = new THREE.CylinderGeometry(chipRadius, chipRadius, chipHeight, 16);
+  
+  for (let i = 0; i < count; i++) {
+    const isAlternated = (i % 2 === 0);
+    const chipMat = new THREE.MeshStandardMaterial({
+      color: isAlternated ? colorHex : 0xffffff,
+      roughness: 0.45,
+      metalness: 0.12
+    });
+    
+    const chipMesh = new THREE.Mesh(chipGeo, chipMat);
+    chipMesh.position.y = (i * chipHeight) + (chipHeight / 2);
+    chipMesh.castShadow = true;
+    chipMesh.receiveShadow = true;
+    group.add(chipMesh);
+  }
+  
+  group.position.set(px, 0, pz);
+  scene.add(group);
+  
+  // Agregar cuerpo físico estático de Cannon.js para que rebote
+  const stackHeight = count * chipHeight;
+  const body = new CANNON.Body({
+    mass: 0,
+    shape: new CANNON.Cylinder(chipRadius, chipRadius, stackHeight, 16),
+    material: tablePhysicsMaterial
+  });
+  body.position.set(px, stackHeight / 2, pz);
+  
+  const q = new CANNON.Quaternion();
+  q.setFromAxisAngle(new CANNON.Vec3(1, 0, 0), -Math.PI / 2);
+  body.quaternion.copy(q);
+  
+  world.addBody(body);
+}
+
 function init3DAndPhysics() {
   const container = document.getElementById('canvas-3d');
   const width = container.clientWidth;
@@ -1130,18 +1305,60 @@ function init3DAndPhysics() {
     world.addBody(body);
 
     const wallGeo = new THREE.BoxGeometry(sx, sy, sz);
-    const wallMat = new THREE.MeshStandardMaterial({ color: 0x181514, roughness: 0.9, metalness: 0.6 });
+    // Madera caoba pulida para los bordes
+    const wallMat = new THREE.MeshStandardMaterial({ 
+      color: 0x3a1910, 
+      roughness: 0.15, 
+      metalness: 0.1 
+    });
     const mesh = new THREE.Mesh(wallGeo, wallMat);
     mesh.position.set(px, py, pz);
     mesh.receiveShadow = true;
     mesh.castShadow = true;
     scene.add(mesh);
+
+    // Padded leather armrest en la parte superior de cada pared
+    const armrestGeo = (sz > sx) 
+      ? new THREE.BoxGeometry(0.35, 0.08, sz + 0.1) 
+      : new THREE.BoxGeometry(sx + 0.1, 0.08, 0.35);
+    
+    const armrestMat = new THREE.MeshStandardMaterial({
+      color: 0x161514, // Cuero negro de casino
+      roughness: 0.72,
+      metalness: 0.08
+    });
+    const armrestMesh = new THREE.Mesh(armrestGeo, armrestMat);
+    armrestMesh.position.set(px, py + (sy / 2) + 0.04, pz);
+    armrestMesh.receiveShadow = true;
+    armrestMesh.castShadow = true;
+    scene.add(armrestMesh);
   };
 
   createWall(0, 0.6, -4.1, 6.2, 1.2, 0.2);
   createWall(0, 0.6, 4.1, 6.2, 1.2, 0.2);
   createWall(-3.1, 0.6, 0, 0.2, 1.2, 8.2);
   createWall(3.1, 0.6, 0, 0.2, 1.2, 8.2);
+
+  // 3.5. Crear pilas de fichas de casino en las esquinas (decoración y colisiones)
+  // Esquina superior izquierda
+  createChipStack(-2.7, -3.7, 12, 0xdfb858);
+  createChipStack(-2.4, -3.7, 8, 0x111111);
+  createChipStack(-2.7, -3.4, 10, 0xd32f2f);
+
+  // Esquina superior derecha
+  createChipStack(2.7, -3.7, 14, 0x2e7d32);
+  createChipStack(2.4, -3.7, 9, 0x1565c0);
+  createChipStack(2.7, -3.4, 7, 0xeeeeee);
+
+  // Esquina inferior izquierda
+  createChipStack(-2.7, 3.7, 10, 0xd32f2f);
+  createChipStack(-2.4, 3.7, 12, 0x1565c0);
+  createChipStack(-2.7, 3.4, 6, 0x111111);
+
+  // Esquina inferior derecha
+  createChipStack(2.7, 3.7, 15, 0xdfb858);
+  createChipStack(2.4, 3.7, 8, 0x2e7d32);
+  createChipStack(2.7, 3.4, 11, 0xeeeeee);
 
   // 4. Luces y Foco colgante
   const ambient = new THREE.AmbientLight(0xffffff, 0.12);
@@ -1150,11 +1367,20 @@ function init3DAndPhysics() {
   lightBulb = new THREE.PointLight(0xffe2cc, 2.0, 20);
   lightBulb.position.set(0, 4.5, 0);
   lightBulb.castShadow = true;
-  lightBulb.shadow.mapSize.width = 1024; // Resolución superior para sombras nítidas
+  lightBulb.shadow.mapSize.width = 1024;
   lightBulb.shadow.mapSize.height = 1024;
   lightBulb.shadow.bias = -0.002;
-  lightBulb.shadow.radius = 4.0; // Bordes de sombra suaves (penumbra industrial)
+  lightBulb.shadow.radius = 4.0;
   scene.add(lightBulb);
+
+  // Luz secundaria para sombras suaves y brillos en acrílico
+  const dirLight = new THREE.DirectionalLight(0xffffff, 0.45);
+  dirLight.position.set(3, 6, 4);
+  dirLight.castShadow = true;
+  dirLight.shadow.mapSize.width = 512;
+  dirLight.shadow.mapSize.height = 512;
+  dirLight.shadow.bias = -0.003;
+  scene.add(dirLight);
 
   const bulbFixtureGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.8, 8);
   const bulbFixtureMat = new THREE.MeshStandardMaterial({ color: 0x111111, metalness: 0.9 });
@@ -1223,18 +1449,25 @@ function init3DAndPhysics() {
   ghostLine = new THREE.Line(ghostLineGeo, ghostLineMat);
   scene.add(ghostLine);
 
-  // 7. Sistema de Partículas (Chispas)
-  const sparkGeo = new THREE.BoxGeometry(0.06, 0.06, 0.06);
-  const sparkMat = new THREE.MeshBasicMaterial({ color: 0xffa000 });
+  // 7. Sistema de Ondas en Fieltro (Impactos)
+  const sparkGeo = new THREE.RingGeometry(0.01, 0.15, 24);
   
   sparkParticles = [];
   for (let i = 0; i < maxSparks; i++) {
-    const mesh = new THREE.Mesh(sparkGeo, sparkMat);
+    const mat = new THREE.MeshBasicMaterial({
+      color: 0xffd700,
+      transparent: true,
+      opacity: 0.6,
+      side: THREE.DoubleSide,
+      depthWrite: false
+    });
+    const mesh = new THREE.Mesh(sparkGeo, mat);
+    mesh.rotation.x = -Math.PI / 2; // Acostar en plano XZ
     mesh.visible = false;
     scene.add(mesh);
     sparkParticles.push({
       mesh: mesh,
-      vel: new THREE.Vector3(0,0,0),
+      mat: mat,
       life: 0,
       maxLife: 0
     });
@@ -1282,30 +1515,25 @@ function handleDiceCollision(e) {
   }
 }
 
-// --- DUST & SPARK SPARTICLES SYSTEM ---
+// --- DUST & SHOCK RIPPLE SYSTEM ---
 function spawnSparks(position, intensity, skinId) {
   let spawned = 0;
-  const count = Math.min(Math.floor(intensity * 3), 15);
+  // Solo necesitamos 1 o 2 ondas de expansión por impacto
+  const count = Math.min(Math.floor(intensity * 0.5) + 1, 3);
 
   // Buscar partículas inactivas
   for (let i = 0; i < maxSparks; i++) {
     const s = sparkParticles[i];
     if (s.life <= 0) {
-      s.mesh.position.copy(position);
+      s.mesh.position.set(position.x, 0.01, position.z);
       s.mesh.visible = true;
-      
-      // Velocidad aleatoria dispersa hacia arriba
-      s.vel.set(
-        (Math.random() - 0.5) * 3,
-        2 + Math.random() * 3,
-        (Math.random() - 0.5) * 3
-      );
+      s.mesh.scale.set(1.0, 1.0, 1.0); // Resetear escala
 
-      // Color según la skin del dado colisionado
       const colors = SkinColors[skinId] || SkinColors.steel;
-      s.mesh.material.color.set(colors.dots);
+      s.mat.color.set(colors.dots);
+      s.mat.opacity = 0.75; // Opacidad inicial
 
-      s.maxLife = 0.3 + Math.random() * 0.4;
+      s.maxLife = 0.35 + Math.random() * 0.15; // Duración
       s.life = s.maxLife;
 
       spawned++;
@@ -1321,13 +1549,11 @@ function updateParticles(dt) {
       if (s.life <= 0) {
         s.mesh.visible = false;
       } else {
-        // Aplicar velocidad y gravedad simple
-        s.mesh.position.addScaledVector(s.vel, dt);
-        s.vel.y -= 9.8 * dt; // Gravedad a las chispas
+        const progress = 1.0 - (s.life / s.maxLife);
+        const scale = 1.0 + progress * 4.8; // Expandir
+        s.mesh.scale.set(scale, scale, 1.0);
 
-        // Escalar según vida restante
-        const scale = s.life / s.maxLife;
-        s.mesh.scale.set(scale, scale, scale);
+        s.mat.opacity = (s.life / s.maxLife) * 0.75; // Desvanecer
       }
     }
   });
