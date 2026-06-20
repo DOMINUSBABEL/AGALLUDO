@@ -759,6 +759,57 @@ function applyDiceSkins() {
       skinId = 'steel';
     }
     
+    // Propiedades de sombreado específicas para la skin
+    let roughness = 0.4;
+    let metalness = 0.7;
+    let emissiveColor = 0x000000;
+    let emissiveIntensity = 0;
+
+    switch (skinId) {
+      case 'steel':
+        roughness = 0.55;
+        metalness = 0.8;
+        break;
+      case 'copper':
+        roughness = 0.25;
+        metalness = 0.95;
+        break;
+      case 'gold':
+        roughness = 0.08;
+        metalness = 0.98;
+        break;
+      case 'carbon':
+        roughness = 0.85;
+        metalness = 0.15;
+        break;
+      case 'neon':
+        roughness = 0.1;
+        metalness = 0.2;
+        emissiveColor = 0xff007f;
+        emissiveIntensity = 0.55;
+        break;
+      case 'crimson':
+        roughness = 0.2;
+        metalness = 0.85;
+        break;
+      case 'chrome':
+        roughness = 0.01;
+        metalness = 1.0;
+        break;
+      case 'obsidian':
+        roughness = 0.15;
+        metalness = 0.3;
+        emissiveColor = 0xff3d00;
+        emissiveIntensity = 0.35;
+        break;
+      case 'darkmatter':
+        roughness = 0.45;
+        metalness = 0.65;
+        emissiveColor = 0xe040fb;
+        emissiveIntensity = 0.45;
+        break;
+    }
+
     // Mapeo orden estándar de caras BoxGeometry: PX, NX, PY, NY, PZ, NZ
     const faceValues = [1, 6, 2, 5, 3, 4];
     for (let i = 0; i < 6; i++) {
@@ -767,6 +818,13 @@ function applyDiceSkins() {
           d.mesh.material[i].map.dispose();
         }
         d.mesh.material[i].map = createDiceFaceTexture(faceValues[i], skinId);
+        
+        // Aplicar propiedades PBR en tiempo real
+        d.mesh.material[i].roughness = roughness;
+        d.mesh.material[i].metalness = metalness;
+        d.mesh.material[i].emissive.setHex(emissiveColor);
+        d.mesh.material[i].emissiveIntensity = emissiveIntensity;
+        
         d.mesh.material[i].needsUpdate = true;
       }
     }
