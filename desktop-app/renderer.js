@@ -998,9 +998,10 @@ function init3DAndPhysics() {
   lightBulb = new THREE.PointLight(0xffe2cc, 2.0, 20);
   lightBulb.position.set(0, 4.5, 0);
   lightBulb.castShadow = true;
-  lightBulb.shadow.mapSize.width = 512; // Óptimo para rendimiento
-  lightBulb.shadow.mapSize.height = 512;
-  lightBulb.shadow.bias = -0.003;
+  lightBulb.shadow.mapSize.width = 1024; // Resolución superior para sombras nítidas
+  lightBulb.shadow.mapSize.height = 1024;
+  lightBulb.shadow.bias = -0.002;
+  lightBulb.shadow.radius = 4.0; // Bordes de sombra suaves (penumbra industrial)
   scene.add(lightBulb);
 
   const bulbFixtureGeo = new THREE.CylinderGeometry(0.08, 0.08, 0.8, 8);
@@ -1008,6 +1009,13 @@ function init3DAndPhysics() {
   lightBulbFixture = new THREE.Mesh(bulbFixtureGeo, bulbFixtureMat);
   lightBulbFixture.position.set(0, 5, 0);
   scene.add(lightBulbFixture);
+
+  // Cable de suspensión metálico acoplado al movimiento pendular
+  const cableGeo = new THREE.CylinderGeometry(0.015, 0.015, 3.0, 6);
+  const cableMat = new THREE.MeshStandardMaterial({ color: 0x1a1a1a, metalness: 0.8, roughness: 0.6 });
+  const cableMesh = new THREE.Mesh(cableGeo, cableMat);
+  cableMesh.position.set(0, 1.5, 0);
+  lightBulbFixture.add(cableMesh);
 
   const bulbGeo = new THREE.SphereGeometry(0.16, 16, 16);
   const bulbMat = new THREE.MeshBasicMaterial({ color: 0xffe2cc });
