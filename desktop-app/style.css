@@ -255,6 +255,23 @@ body {
   margin-top: 10px;
 }
 
+.logo-developer {
+  font-family: 'Outfit', sans-serif;
+  font-size: 10px;
+  font-weight: 700;
+  color: var(--text-secondary);
+  letter-spacing: 3px;
+  margin-top: 14px;
+  opacity: 0.85;
+}
+
+.dev-highlight {
+  color: #dfb858;
+  text-shadow: 0 0 8px rgba(223, 184, 88, 0.5);
+  font-weight: 900;
+  letter-spacing: 4px;
+}
+
 .menu-panels-container {
   display: flex;
   gap: 25px;
