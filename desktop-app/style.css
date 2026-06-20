@@ -510,8 +510,14 @@ body {
   border: none;
   letter-spacing: 2px;
   text-transform: uppercase;
-  transition: all 0.25s cubic-bezier(0.165, 0.84, 0.44, 1);
+  transition: all 0.2s cubic-bezier(0.165, 0.84, 0.44, 1);
   outline: none;
+  position: relative;
+  overflow: hidden;
+}
+
+.btn:active:not(:disabled) {
+  transform: translateY(1px) scale(0.98);
 }
 
 .btn-primary {
@@ -521,10 +527,10 @@ body {
   box-shadow: 0 4px 15px var(--accent-glow);
 }
 
-.btn-primary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 6px 22px var(--accent-glow);
-  opacity: 0.9;
+.btn-primary:hover:not(:disabled) {
+  transform: translateY(-2.5px);
+  box-shadow: 0 8px 25px var(--accent-glow);
+  filter: brightness(1.15);
 }
 
 .btn-action {
@@ -534,8 +540,10 @@ body {
 }
 
 .btn-action:hover:not(:disabled) {
-  background: rgba(255,255,255,0.03);
+  background: rgba(255,255,255,0.04);
   border-color: var(--accent-color);
+  box-shadow: 0 0 12px var(--accent-glow);
+  text-shadow: 0 0 5px var(--accent-color);
 }
 
 .btn-success {
