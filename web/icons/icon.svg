@@ -1,0 +1,72 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512">
+  <defs>
+    <linearGradient id="bgGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#040810"/>
+      <stop offset="50%" stop-color="#0a1324"/>
+      <stop offset="100%" stop-color="#020408"/>
+    </linearGradient>
+    <linearGradient id="diceTop" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#00f0ff"/>
+      <stop offset="100%" stop-color="#0080ff"/>
+    </linearGradient>
+    <linearGradient id="diceLeft" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#004880"/>
+      <stop offset="100%" stop-color="#002444"/>
+    </linearGradient>
+    <linearGradient id="diceRight" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#0070b8"/>
+      <stop offset="100%" stop-color="#003560"/>
+    </linearGradient>
+    <radialGradient id="neonGlow" cx="50%" cy="50%" r="50%">
+      <stop offset="0%" stop-color="#00e5ff" stop-opacity="0.35"/>
+      <stop offset="100%" stop-color="#00e5ff" stop-opacity="0"/>
+    </radialGradient>
+    <filter id="glow">
+      <feGaussianBlur stdDeviation="8" result="coloredBlur"/>
+      <feMerge>
+        <feMergeNode in="coloredBlur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+  </defs>
+
+  <!-- Background Base with rounded corners -->
+  <rect width="512" height="512" rx="112" fill="url(#bgGrad)"/>
+  <rect width="504" height="504" x="4" y="4" rx="108" fill="none" stroke="#00e5ff" stroke-width="3" stroke-opacity="0.4"/>
+  
+  <!-- Radial Neon Atmosphere -->
+  <circle cx="256" cy="256" r="230" fill="url(#neonGlow)"/>
+
+  <!-- Octagonal Arena Ring -->
+  <polygon points="256,44 406,106 468,256 406,406 256,468 106,406 44,256 106,106" 
+           fill="none" stroke="#00e5ff" stroke-width="4" stroke-opacity="0.3" stroke-dasharray="16, 8"/>
+
+  <!-- Center Isometric Dice (Battle Royale Core) -->
+  <g transform="translate(0, 10)">
+    <!-- Top Face -->
+    <polygon points="256,120 376,188 256,256 136,188" fill="url(#diceTop)" stroke="#ffffff" stroke-width="2" filter="url(#glow)"/>
+    <!-- Pip: Center (1 Mortal Red Altar) -->
+    <circle cx="256" cy="188" r="15" fill="#ff1a40" stroke="#ffffff" stroke-width="2" filter="url(#glow)"/>
+
+    <!-- Left Face -->
+    <polygon points="136,188 256,256 256,380 136,312" fill="url(#diceLeft)" stroke="#00e5ff" stroke-width="1.5"/>
+    <!-- Pips: 3 pips on Left Face -->
+    <circle cx="166" cy="225" r="9" fill="#00ffff" opacity="0.9"/>
+    <circle cx="196" cy="284" r="9" fill="#00ffff" opacity="0.9"/>
+    <circle cx="226" cy="343" r="9" fill="#00ffff" opacity="0.9"/>
+
+    <!-- Right Face -->
+    <polygon points="256,256 376,188 376,312 256,380" fill="url(#diceRight)" stroke="#00e5ff" stroke-width="1.5"/>
+    <!-- Pips: 6 pips on Right Face -->
+    <circle cx="290" cy="235" r="8" fill="#ffffff" opacity="0.95"/>
+    <circle cx="340" cy="207" r="8" fill="#ffffff" opacity="0.95"/>
+    <circle cx="290" cy="285" r="8" fill="#ffffff" opacity="0.95"/>
+    <circle cx="340" cy="257" r="8" fill="#ffffff" opacity="0.95"/>
+    <circle cx="290" cy="335" r="8" fill="#ffffff" opacity="0.95"/>
+    <circle cx="340" cy="307" r="8" fill="#ffffff" opacity="0.95"/>
+  </g>
+
+  <!-- Title Badge Text -->
+  <text x="256" y="445" text-anchor="middle" font-family="'Orbitron', sans-serif, system-ui" font-size="28" font-weight="900" fill="#00ffff" letter-spacing="6">AGALLUDO</text>
+  <text x="256" y="475" text-anchor="middle" font-family="'Share Tech Mono', monospace" font-size="16" font-weight="700" fill="#ff9900" letter-spacing="4">ROYALE 8P</text>
+</svg>

@@ -1,0 +1,35 @@
+{
+  "name": "Agalludo Royale: Battle Royale de Dados 3D",
+  "short_name": "Agalludo Royale",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#070d18",
+  "theme_color": "#00d2ff",
+  "orientation": "any",
+  "description": "El clásico juego de dados 'El Agalludo' transformado en un Battle Royale 3D con 8 dados simultáneos, 5 arenas físicas desacopladas y 4 poderes tácticos en tiempo real.",
+  "categories": [
+    "games",
+    "entertainment",
+    "strategy"
+  ],
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "icons/icon.svg",
+      "sizes": "any",
+      "type": "image/svg+xml"
+    }
+  ]
+}

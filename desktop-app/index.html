@@ -2,11 +2,22 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0a111c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <title>AGALLUDO ROYALE: BATTLE ROYALE DE DADOS 3D</title>
+  
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
   <link rel="stylesheet" href="style.css">
-  <!-- Dependencias 3D y Físicas locales para ejecución offline -->
+
+  <!-- Dependencias 3D y Físicas locales con Fallback CDN -->
   <script src="libs/three.min.js"></script>
+  <script>if(!window.THREE) document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\\/script>');</script>
   <script src="libs/cannon.min.js"></script>
+  <script>if(!window.CANNON) document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"><\\/script>');</script>
 </head>
 <body class="theme-cyan">
   <div id="game-container">
@@ -62,6 +73,21 @@
               <option value="PLATA" selected>IA TÁCTICA (RANGO PLATA)</option>
               <option value="ORO">IA MAESTRA (RANGO ORO / DICE CONTROL)</option>
             </select>
+          </div>
+
+          <div class="config-group" id="arena-group">
+            <label>ARENA / TABLERO DE COMBATE (FÍSICAS VARIABLES)</label>
+            <select id="select-arena" class="config-select">
+              <option value="oak" selected>SALÓN DE ROBLE (BURDEOS - EQUILIBRADO)</option>
+              <option value="felt">VERDE CASINO (MONTECARLO - ALTA FRICCIÓN)</option>
+              <option value="ironplate">BÚNKER INDUSTRIAL (ACERO - REBOTE LÁSER)</option>
+              <option value="marble">TRIBUNAL DE MÁRMOL (CARRARA - ULTRA DESLIZANTE)</option>
+              <option value="plasma">CASINO VIRTUAL (PLASMA - MICROGRAVEDAD)</option>
+            </select>
+          </div>
+
+          <div class="arena-feature-badge">
+            <span>⚔️ ARENA BATTLE ROYALE · 8 DADOS SIMULTÁNEOS EN PUGNA</span>
           </div>
 
           <!-- Reproductor de Música Procedural -->
@@ -216,6 +242,16 @@
               <span class="skill-name">🛡️ ESCUDO DE FOSA</span>
               <span class="skill-key">[C]</span>
               <span class="skill-status" id="shield-status">LISTO</span>
+            </button>
+            <button id="btn-skill-shockwave" class="btn-skill" disabled>
+              <span class="skill-name">⚡ ONDA DE CHOQUE</span>
+              <span class="skill-key">[X]</span>
+              <span class="skill-status" id="shockwave-status">LISTO</span>
+            </button>
+            <button id="btn-skill-vortex" class="btn-skill" disabled>
+              <span class="skill-name">🧲 VÓRTICE TÁCTICO</span>
+              <span class="skill-key">[V]</span>
+              <span class="skill-status" id="vortex-status">LISTO</span>
             </button>
           </div>
           <div id="lockout-overlay" class="hidden">
@@ -412,24 +448,22 @@
         </div>
       </div>
     </div>
-
-    <!-- ESPACIO PUBLICITARIO GOOGLE ADS (ADMOB / ADSENSE BANNER) -->
-    <div id="ad-banner-container">
-      <div class="ad-placeholder">PUBLICIDAD | ESPACIO RESERVADO PARA GOOGLE ADS</div>
-      <!--
-      <ins class="adsbygoogle"
-           style="display:inline-block;width:320px;height:50px"
-           data-ad-client="ca-pub-XXXXXXXXXXXXXX"
-           data-ad-slot="XXXXXXXXXX"></ins>
-      <script>
-           (adsbygoogle = window.adsbygoogle || []).push({});
-      </script>
-      -->
-    </div>
   </div>
 
   <!-- Cargar motor de juego -->
   <script src="renderer.js"></script>
 
+  <!-- PWA Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').then((reg) => {
+          console.log('[PWA] Service Worker registrado:', reg.scope);
+        }).catch((err) => {
+          console.warn('[PWA] Service Worker no registrado (entorno local o sin SSL):', err);
+        });
+      });
+    }
+  </script>
 </body>
 </html>

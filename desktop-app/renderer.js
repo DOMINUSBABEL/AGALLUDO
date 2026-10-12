@@ -562,12 +562,16 @@ const originalCamPos = new THREE.Vector3(0, 8.5, 7);
 // HUD Visual de Dados (Sprites 3D flotantes)
 let billboardSprites = [];
 
-// Configuraciones base de dados
+// Configuraciones base de 8 dados concurrentes en la arena Battle Royale
 const DiceMesaConfig = [
-  { playerId: 'player', skin: 'steel', readyPos: new CANNON.Vec3(0, 0.4, 2.5), name: 'TU' },
-  { playerId: 'bot_table_1', skin: 'copper', readyPos: new CANNON.Vec3(0, 0.4, -2.5), name: 'IA 1' },
-  { playerId: 'bot_table_2', skin: 'gold', readyPos: new CANNON.Vec3(-1.8, 0.4, 0), name: 'IA 2' },
-  { playerId: 'bot_table_3', skin: 'carbon', readyPos: new CANNON.Vec3(1.8, 0.4, 0), name: 'IA 3' }
+  { playerId: 'player', skin: 'steel', readyPos: new CANNON.Vec3(0, 0.4, 2.7), name: 'TU (JUGADOR)' },
+  { playerId: 'bot_table_1', skin: 'copper', readyPos: new CANNON.Vec3(0, 0.4, -2.7), name: 'VIPER (BOT)' },
+  { playerId: 'bot_table_2', skin: 'gold', readyPos: new CANNON.Vec3(-2.2, 0.4, 0), name: 'APEX (BOT)' },
+  { playerId: 'bot_table_3', skin: 'carbon', readyPos: new CANNON.Vec3(2.2, 0.4, 0), name: 'RAZOR (BOT)' },
+  { playerId: 'bot_table_4', skin: 'neon', readyPos: new CANNON.Vec3(-1.7, 0.4, 2.0), name: 'CYBORG (BOT)' },
+  { playerId: 'bot_table_5', skin: 'crimson', readyPos: new CANNON.Vec3(1.7, 0.4, 2.0), name: 'CLINCH (BOT)' },
+  { playerId: 'bot_table_6', skin: 'chrome', readyPos: new CANNON.Vec3(-1.7, 0.4, -2.0), name: 'BUMPER (BOT)' },
+  { playerId: 'bot_table_7', skin: 'obsidian', readyPos: new CANNON.Vec3(1.7, 0.4, -2.0), name: 'SLASHER (BOT)' }
 ];
 
 // --- DECLARACIONES DE VARIABLES GLOBALES ADICIONALES ---
@@ -597,6 +601,7 @@ let playerSkin = 'steel';
 const maxGhostPoints = 50;
 let ghostLine;
 let playerDiceGlowRing;
+let slingshotAimLine = null;
 let ghostPoints = [];
 
 // Habilidades tácticas activas del jugador
@@ -676,6 +681,103 @@ function triggerBrake() {
   addLog("💥 ¡Freno Magnético activado! Dado detenido de golpe.", 'success');
 }
 
+let hasShockwaveUsed = false;
+let hasVortexUsed = false;
+
+function triggerShockwave() {
+  if (currentGameState !== GameState.PLAYING) return;
+  const myself = players.find(p => p.id === 'player');
+  if (!myself || myself.isEliminated || myself.lockout > 0) return;
+  if (hasShockwaveUsed) return;
+
+  const playerDice = tableDice.find(d => d.configId === 'player' || d.activePlayerId === 'player');
+  if (!playerDice) return;
+
+  hasShockwaveUsed = true;
+  soundPlayer.playBrake();
+
+  const pPos = playerDice.body.position;
+  spawnSparks(new THREE.Vector3(pPos.x, 0.1, pPos.z), 4.5, 'neon');
+  cameraShakeIntensity = 0.28;
+  cameraShakeTime = 0.4;
+
+  let repelledCount = 0;
+  tableDice.forEach(d => {
+    if (d !== playerDice && d.activePlayerId) {
+      const dx = d.body.position.x - pPos.x;
+      const dz = d.body.position.z - pPos.z;
+      const dist = Math.sqrt(dx * dx + dz * dz);
+      if (dist < 3.2) {
+        const factor = Math.max(0.6, 3.2 - dist);
+        const impulseX = (dx / (dist || 0.1)) * factor * 9.5;
+        const impulseZ = (dz / (dist || 0.1)) * factor * 9.5;
+        d.body.velocity.x += impulseX;
+        d.body.velocity.y += 3.5;
+        d.body.velocity.z += impulseZ;
+        d.body.angularVelocity.x += (Math.random() - 0.5) * 12;
+        d.body.angularVelocity.z += (Math.random() - 0.5) * 12;
+        d.isRolling = true;
+        repelledCount++;
+      }
+    }
+  });
+
+  const shockBtn = document.getElementById('btn-skill-shockwave');
+  const shockStatus = document.getElementById('shockwave-status');
+  if (shockBtn && shockStatus) {
+    shockBtn.classList.add('cooldown');
+    shockBtn.disabled = true;
+    shockStatus.innerText = 'USADO';
+    shockStatus.style.color = 'var(--text-secondary)';
+    shockStatus.style.background = 'rgba(255,255,255,0.05)';
+  }
+
+  addLog(`⚡ ¡Onda de Choque Repulsora activada! ${repelledCount} dados rivales repelidos violentamente.`, 'warn');
+}
+
+function triggerVortex() {
+  if (currentGameState !== GameState.PLAYING) return;
+  const myself = players.find(p => p.id === 'player');
+  if (!myself || myself.isEliminated || myself.lockout > 0) return;
+  if (hasVortexUsed) return;
+
+  hasVortexUsed = true;
+  soundPlayer.playLevelUp();
+
+  addLog("🧲 ¡Vórtice Táctico activado! Singularidad gravitatoria activa durante 2.5s.", 'warn');
+  cameraShakeIntensity = 0.15;
+  cameraShakeTime = 0.6;
+
+  let vortexTicks = 0;
+  const vortexInterval = setInterval(() => {
+    vortexTicks++;
+    tableDice.forEach(d => {
+      if (d.activePlayerId) {
+        const dx = 0 - d.body.position.x;
+        const dz = 0 - d.body.position.z;
+        const dist = Math.sqrt(dx * dx + dz * dz);
+        if (dist > 0.4) {
+          d.body.velocity.x += (dx / dist) * 2.2;
+          d.body.velocity.z += (dz / dist) * 2.2;
+        }
+      }
+    });
+    if (vortexTicks >= 25 || currentGameState !== GameState.PLAYING) {
+      clearInterval(vortexInterval);
+    }
+  }, 100);
+
+  const vortBtn = document.getElementById('btn-skill-vortex');
+  const vortStatus = document.getElementById('vortex-status');
+  if (vortBtn && vortStatus) {
+    vortBtn.classList.add('cooldown');
+    vortBtn.disabled = true;
+    vortStatus.innerText = 'USADO';
+    vortStatus.style.color = 'var(--text-secondary)';
+    vortStatus.style.background = 'rgba(255,255,255,0.05)';
+  }
+}
+
 function addLog(message, type) {
   const container = document.getElementById('crt-logs');
   if (!container) return;
@@ -690,9 +792,28 @@ function addLog(message, type) {
   container.scrollTop = container.scrollHeight;
 }
 
+function onWindowResize() {
+  const container = document.getElementById('canvas-3d');
+  if (!container || !renderer3d || !camera) return;
+  const width = container.clientWidth || 800;
+  const height = container.clientHeight || 500;
+  if (width > 0 && height > 0) {
+    camera.aspect = width / height;
+    camera.updateProjectionMatrix();
+    renderer3d.setSize(width, height);
+  }
+}
+window.addEventListener('resize', onWindowResize);
+
 function showScreen(screenId) {
   document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
-  document.getElementById(`${screenId}-screen`).classList.add('active');
+  const target = document.getElementById(`${screenId}-screen`);
+  if (target) {
+    target.classList.add('active');
+    if (screenId === 'play') {
+      setTimeout(onWindowResize, 30);
+    }
+  }
 }
 
 function stopLoops() {
@@ -1551,10 +1672,30 @@ function init3DAndPhysics() {
     });
   }
 
-  // 8. Eventos
+  // 8. Línea de Apuntado Slingshot
+  const aimGeo = new THREE.BufferGeometry();
+  const aimPositions = new Float32Array(25 * 3);
+  aimGeo.setAttribute('position', new THREE.BufferAttribute(aimPositions, 3));
+  const aimMat = new THREE.LineDashedMaterial({
+    color: 0x00ffff,
+    dashSize: 0.15,
+    gapSize: 0.08,
+    linewidth: 2,
+    transparent: true,
+    opacity: 0.85
+  });
+  slingshotAimLine = new THREE.Line(aimGeo, aimMat);
+  slingshotAimLine.visible = false;
+  scene.add(slingshotAimLine);
+
+  // 9. Eventos Mouse y Touch Slingshot
   container.addEventListener('mousedown', onDragStart);
   container.addEventListener('mousemove', onDragMove);
   window.addEventListener('mouseup', onDragEnd);
+
+  container.addEventListener('touchstart', onTouchStart, { passive: false });
+  container.addEventListener('touchmove', onTouchMove, { passive: false });
+  window.addEventListener('touchend', onTouchEnd, { passive: false });
 }
 
 // Chispas e impacto
@@ -1746,13 +1887,35 @@ function clearBillboards() {
   billboardSprites = [];
 }
 
-// --- DRAG Y TIROS ---
+// --- DRAG, TOUCH Y TIROS SLINGSHOT ---
+function onTouchStart(e) {
+  if (e.touches && e.touches.length > 0) {
+    if (e.cancelable) e.preventDefault();
+    const t = e.touches[0];
+    onDragStart({ clientX: t.clientX, clientY: t.clientY });
+  }
+}
+
+function onTouchMove(e) {
+  if (e.touches && e.touches.length > 0) {
+    if (e.cancelable) e.preventDefault();
+    const t = e.touches[0];
+    onDragMove({ clientX: t.clientX, clientY: t.clientY });
+  }
+}
+
+function onTouchEnd(e) {
+  if (e.cancelable) e.preventDefault();
+  onDragEnd(e);
+}
+
 function onDragStart(e) {
   if (currentGameState !== GameState.PLAYING) return;
   const myself = players.find(p => p.id === 'player');
-  if (myself.isEliminated || myself.lockout > 0) return;
+  if (!myself || myself.isEliminated || myself.lockout > 0) return;
 
   const playerDiceObj = tableDice.find(d => d.configId === 'player');
+  if (!playerDiceObj) return;
   const dist = playerDiceObj.body.position.distanceTo(playerDiceObj.readyPos);
   if (dist > 0.45 || playerDiceObj.isRolling) return;
 
@@ -1767,18 +1930,82 @@ function onDragStart(e) {
 function onDragMove(e) {
   if (!isDragging) return;
   currentDragPos = { x: e.clientX, y: e.clientY };
+
+  // Actualizar indicador visual de trayectoria Slingshot en tiempo real
+  if (slingshotAimLine) {
+    const dx = currentDragPos.x - dragStartPos.x;
+    const dy = currentDragPos.y - dragStartPos.y;
+    
+    // Slingshot: tensar hacia atrás (dy > 10) apunta hacia adelante de la mesa
+    let aimVx = -dx * 0.038;
+    let aimVz = -dy * 0.052;
+
+    if (dy < -10) {
+      // Flick hacia adelante
+      aimVx = dx * 0.038;
+      aimVz = dy * 0.052;
+    }
+
+    const playerDiceObj = tableDice.find(d => d.configId === 'player');
+    if (playerDiceObj) {
+      const p0 = playerDiceObj.readyPos;
+      const positions = slingshotAimLine.geometry.attributes.position.array;
+      const steps = 25;
+      const dt = 0.04;
+      const grav = -17.0;
+
+      for (let i = 0; i < steps; i++) {
+        const t = i * dt;
+        const px = p0.x + aimVx * t * 8;
+        const py = p0.y + (5.0 * t) + (0.5 * grav * t * t);
+        const pz = p0.z + aimVz * t * 8;
+
+        positions[i * 3] = px;
+        positions[i * 3 + 1] = Math.max(py, 0.05);
+        positions[i * 3 + 2] = pz;
+      }
+
+      slingshotAimLine.geometry.attributes.position.needsUpdate = true;
+      slingshotAimLine.computeLineDistances();
+      slingshotAimLine.visible = true;
+    }
+  }
 }
 
 function onDragEnd(e) {
   if (!isDragging) return;
   isDragging = false;
 
+  if (slingshotAimLine) {
+    slingshotAimLine.visible = false;
+  }
+
   const dx = currentDragPos.x - dragStartPos.x;
   const dy = currentDragPos.y - dragStartPos.y;
   const dt = Math.max(performance.now() - lastDragTime, 16);
 
-  const speedX = (dx / dt) * 0.45;
-  const speedZ = (dy / dt) * 0.45;
+  let speedX = 0;
+  let speedZ = 0;
+
+  // Detección híbrida Slingshot vs Flick vs Tap
+  if (dy > 15) {
+    // Slingshot elástico: tirar hacia atrás proyecta el dado con inercia multiplicada
+    speedX = -dx * 0.042;
+    speedZ = -dy * 0.062;
+  } else if (dy < -15) {
+    // Flick rápido hacia adelante
+    speedX = (dx / dt) * 0.45;
+    speedZ = (dy / dt) * 0.45;
+  } else {
+    // Tap o clic sin arrastre: tiro directo calibrado
+    speedX = (Math.random() - 0.5) * 1.6;
+    speedZ = -6.8;
+  }
+
+  // Respuesta háptica en dispositivos móviles
+  if (navigator.vibrate) {
+    try { navigator.vibrate([15, 30, 20]); } catch (err) {}
+  }
 
   launchDiceFísica('player', speedX, speedZ);
 }
@@ -1860,6 +2087,13 @@ let physicsAccumulator = 0;
 
 function updatePhysicsAndRender() {
   requestAnimationFrame(updatePhysicsAndRender);
+
+  const container = document.getElementById('canvas-3d');
+  if (container && renderer3d && (renderer3d.domElement.width < 10 || Math.abs(container.clientWidth - renderer3d.domElement.width) > 5)) {
+    if (container.clientWidth > 0 && container.clientHeight > 0) {
+      onWindowResize();
+    }
+  }
 
   const now = performance.now();
   const dt = Math.min((now - lastFrameTime) / 1000, 0.1); // Cap a 100ms max
@@ -2184,13 +2418,8 @@ function startGame() {
       });
     }
 
-    // 4 en mesa visible (Mesa 0)
-    activeTablePlayers = [
-      players[0],
-      players[1],
-      players[2],
-      players[3]
-    ];
+    // 8 en mesa visible (Mesa 0 - Battle Royale 8P)
+    activeTablePlayers = players.slice(0, 8);
   } else {
     // Rondas 2+, mantenemos los puntajes secured, reseteamos estado de turno y stasis
     players.forEach(p => {
@@ -2202,10 +2431,33 @@ function startGame() {
     });
   }
 
-  tableDice[0].activePlayerId = activeTablePlayers[0]?.id || null;
-  tableDice[1].activePlayerId = activeTablePlayers[1]?.id || null;
-  tableDice[2].activePlayerId = activeTablePlayers[2]?.id || null;
-  tableDice[3].activePlayerId = activeTablePlayers[3]?.id || null;
+  for (let i = 0; i < 8; i++) {
+    if (tableDice[i]) {
+      tableDice[i].activePlayerId = activeTablePlayers[i]?.id || null;
+      tableDice[i].mesh.visible = !!activeTablePlayers[i];
+    }
+  }
+
+  // Reiniciar estado de habilidades de combate
+  hasBrakeUsed = false;
+  hasShieldUsed = false;
+  hasShockwaveUsed = false;
+  hasVortexUsed = false;
+  isShieldActive = false;
+
+  const bBrake = document.getElementById('btn-skill-brake');
+  const bShield = document.getElementById('btn-skill-shield');
+  const bShock = document.getElementById('btn-skill-shockwave');
+  const bVort = document.getElementById('btn-skill-vortex');
+  const sBrake = document.getElementById('brake-status');
+  const sShield = document.getElementById('shield-status');
+  const sShock = document.getElementById('shockwave-status');
+  const sVort = document.getElementById('vortex-status');
+
+  if (bBrake && sBrake) { bBrake.disabled = false; bBrake.classList.remove('cooldown'); sBrake.innerText = 'LISTO'; sBrake.style.color = 'var(--terminal-green)'; sBrake.style.background = 'rgba(0,255,0,0.15)'; }
+  if (bShield && sShield) { bShield.disabled = false; bShield.classList.remove('cooldown'); sShield.innerText = 'LISTO'; sShield.style.color = 'var(--terminal-green)'; sShield.style.background = 'rgba(0,255,0,0.15)'; }
+  if (bShock && sShock) { bShock.disabled = false; bShock.classList.remove('cooldown'); sShock.innerText = 'LISTO'; sShock.style.color = 'var(--terminal-green)'; sShock.style.background = 'rgba(0,255,0,0.15)'; }
+  if (bVort && sVort) { bVort.disabled = false; bVort.classList.remove('cooldown'); sVort.innerText = 'LISTO'; sVort.style.color = 'var(--terminal-green)'; sVort.style.background = 'rgba(0,255,0,0.15)'; }
 
   applyDiceSkins();
   resetDiceToReady();
@@ -2291,16 +2543,26 @@ function startBotsAILoop() {
     if (gameMode === 'sandbox') return;
 
     const aliveMesaBots = activeTablePlayers.filter(p => p.isBot && !p.isEliminated && p.lockout === 0);
-    const rollingDice = tableDice.some(d => d.isRolling);
+    const rollingCount = tableDice.filter(d => d.isRolling).length;
 
-    if (aliveMesaBots.length > 0 && !rollingDice && Math.random() < 0.72) {
-      const selectedBot = aliveMesaBots[Math.floor(Math.random() * aliveMesaBots.length)];
-      executeBotAction(selectedBot);
+    // Concurrencia de combate Battle Royale: hasta 4-6 dados rodando a la vez
+    if (aliveMesaBots.length > 0 && rollingCount < 5) {
+      const availableBots = aliveMesaBots.filter(b => {
+        const d = tableDice.find(dice => dice.activePlayerId === b.id);
+        return d && !d.isRolling;
+      });
+      if (availableBots.length > 0 && Math.random() < 0.85) {
+        const countToLaunch = Math.min(availableBots.length, Math.random() < 0.4 ? 2 : 1);
+        for (let i = 0; i < countToLaunch; i++) {
+          const selectedBot = availableBots[i];
+          executeBotAction(selectedBot);
+        }
+      }
     }
 
     simulateExternalTournamentTables();
     updateLeaderboard();
-  }, 1300);
+  }, 950);
 }
 
 function executeBotAction(bot) {
@@ -2503,15 +2765,17 @@ function triggerEliminationPhase() {
       eliminationRoundCount++;
       
       const sortedSurvivors = finalSurvivors.filter(p => p.id !== 'player').sort((a,b) => b.secured - a.secured);
-      activeTablePlayers = [players.find(p => p.id === 'player')];
-      for (let i = 0; i < 3; i++) {
+      activeTablePlayers = [players.find(p => p.id === 'player')].filter(Boolean);
+      for (let i = 0; i < sortedSurvivors.length && activeTablePlayers.length < 8; i++) {
         if (sortedSurvivors[i]) activeTablePlayers.push(sortedSurvivors[i]);
       }
 
-      tableDice[0].activePlayerId = activeTablePlayers[0]?.id || null;
-      tableDice[1].activePlayerId = activeTablePlayers[1]?.id || null;
-      tableDice[2].activePlayerId = activeTablePlayers[2]?.id || null;
-      tableDice[3].activePlayerId = activeTablePlayers[3]?.id || null;
+      for (let i = 0; i < 8; i++) {
+        if (tableDice[i]) {
+          tableDice[i].activePlayerId = activeTablePlayers[i]?.id || null;
+          tableDice[i].mesh.visible = !!activeTablePlayers[i];
+        }
+      }
 
       startGame();
     }
@@ -2732,8 +2996,27 @@ document.getElementById('btn-player-bank').addEventListener('click', () => {
 });
 
 // Habilidades Tácticas (Click)
-document.getElementById('btn-skill-brake').addEventListener('click', triggerBrake);
-document.getElementById('btn-skill-shield').addEventListener('click', activateShield);
+const btnBrake = document.getElementById('btn-skill-brake');
+const btnShield = document.getElementById('btn-skill-shield');
+const btnShockwave = document.getElementById('btn-skill-shockwave');
+const btnVortex = document.getElementById('btn-skill-vortex');
+
+if (btnBrake) btnBrake.addEventListener('click', triggerBrake);
+if (btnShield) btnShield.addEventListener('click', activateShield);
+if (btnShockwave) btnShockwave.addEventListener('click', triggerShockwave);
+if (btnVortex) btnVortex.addEventListener('click', triggerVortex);
+
+// Selector de Arena de Combate en Lobby
+const selectArenaEl = document.getElementById('select-arena');
+if (selectArenaEl) {
+  selectArenaEl.value = currentTableStyle;
+  selectArenaEl.addEventListener('change', (e) => {
+    currentTableStyle = e.target.value;
+    applyTableStyle();
+    soundPlayer.playClick();
+    addLog(`⚙️ Arena de combate seleccionada: ${currentTableStyle.toUpperCase()}`, 'system');
+  });
+}
 
 // Botones de pantallas finales
 document.getElementById('btn-start-game').addEventListener('click', startGame);
@@ -2758,6 +3041,14 @@ window.addEventListener('keydown', (e) => {
   }
   if (e.key === 'c' || e.key === 'C') {
     activateShield();
+    return;
+  }
+  if (e.key === 'x' || e.key === 'X') {
+    triggerShockwave();
+    return;
+  }
+  if (e.key === 'v' || e.key === 'V') {
+    triggerVortex();
     return;
   }
 
@@ -2810,6 +3101,28 @@ window.addEventListener('DOMContentLoaded', () => {
   init3DAndPhysics();
   initLobby();
   updatePhysicsAndRender();
+
+  // Soporte para pruebas automatizadas vía query params
+  const urlParams = new URLSearchParams(window.location.search);
+  if (urlParams.get('table')) {
+    currentTableStyle = urlParams.get('table');
+    applyTableStyle();
+    if (selectArenaEl) selectArenaEl.value = currentTableStyle;
+  }
+  if (urlParams.get('difficulty')) {
+    aiDifficulty = urlParams.get('difficulty');
+    const diffEl = document.getElementById('select-difficulty');
+    if (diffEl) diffEl.value = aiDifficulty;
+  }
+  if (urlParams.get('autoplay') === '1') {
+    setTimeout(() => {
+      const startBtn = document.getElementById('btn-start-game');
+      if (startBtn) startBtn.click();
+    }, 450);
+  }
+  if (window.location.hash === '#tutorial') {
+    showScreen('tutorial');
+  }
 
   // Añadir efectos sonoros de hover a todos los botones interactivos
   document.querySelectorAll('button, select, .tab-btn, .tuto-tab-btn, .face-selector-btn').forEach(btn => {

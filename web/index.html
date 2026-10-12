@@ -1,0 +1,469 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+  <meta name="theme-color" content="#0a111c">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <title>AGALLUDO ROYALE: BATTLE ROYALE DE DADOS 3D</title>
+  
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" type="image/svg+xml" href="icons/icon.svg">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="style.css">
+
+  <!-- Dependencias 3D y Físicas locales con Fallback CDN -->
+  <script src="libs/three.min.js"></script>
+  <script>if(!window.THREE) document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"><\\/script>');</script>
+  <script src="libs/cannon.min.js"></script>
+  <script>if(!window.CANNON) document.write('<script src="https://cdnjs.cloudflare.com/ajax/libs/cannon.js/0.6.2/cannon.min.js"><\\/script>');</script>
+</head>
+<body class="theme-cyan">
+  <div id="game-container">
+    <!-- CABECERA DE PERFIL GLOBAL (SIEMPRE VISIBLE EN INTRO Y PLAY) -->
+    <header id="global-profile-bar">
+      <div class="profile-left">
+        <span class="profile-avatar">👤</span>
+        <div class="profile-details">
+          <div class="profile-name-row">
+            <span class="profile-name">TU (JUGADOR)</span>
+            <span id="player-title" class="profile-title">Recluso de la Fosa</span>
+          </div>
+          <div class="xp-bar-container">
+            <div id="xp-progress" class="xp-bar-fill" style="width: 0%;"></div>
+            <span id="xp-text" class="xp-label">XP: 0 / 300</span>
+          </div>
+        </div>
+      </div>
+      <div class="profile-right">
+        <div class="level-badge">
+          <span class="lvl-lbl">NIVEL</span>
+          <span id="player-level" class="lvl-val">1</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- PANTALLA DE INTRODUCCIÓN / MENU PRINCIPAL -->
+    <div id="intro-screen" class="screen active">
+      <div class="logo-container">
+        <h1 class="logo-title">AGALLUDO</h1>
+        <h2 class="logo-subtitle">ROYALE</h2>
+        <p class="logo-edition">GEOMETRIC BATTLE ROYALE EXPERIENCE</p>
+        <p class="logo-developer">DESARROLLADO POR <span class="dev-highlight">BABYLON.IA</span></p>
+      </div>
+
+      <div class="menu-panels-container">
+        <!-- Panel 1: Modos e IA -->
+        <div class="intro-card config-card">
+          <h3>SELECCIÓN DE COMBATE</h3>
+          
+          <div class="config-group">
+            <label>MODO DE JUEGO</label>
+            <div class="toggle-buttons">
+              <button id="btn-mode-tournament" class="btn-toggle active">BATTLE ROYALE (16 JUG.)</button>
+              <button id="btn-mode-sandbox" class="btn-toggle">SANDBOX (PRÁCTICA)</button>
+            </div>
+          </div>
+
+          <div class="config-group" id="difficulty-group">
+            <label>DIFICULTAD DE LOS BOTS</label>
+            <select id="select-difficulty" class="config-select">
+              <option value="BRONCE">IA NOVATA (RANGO BRONCE)</option>
+              <option value="PLATA" selected>IA TÁCTICA (RANGO PLATA)</option>
+              <option value="ORO">IA MAESTRA (RANGO ORO / DICE CONTROL)</option>
+            </select>
+          </div>
+
+          <div class="config-group" id="arena-group">
+            <label>ARENA / TABLERO DE COMBATE (FÍSICAS VARIABLES)</label>
+            <select id="select-arena" class="config-select">
+              <option value="oak" selected>SALÓN DE ROBLE (BURDEOS - EQUILIBRADO)</option>
+              <option value="felt">VERDE CASINO (MONTECARLO - ALTA FRICCIÓN)</option>
+              <option value="ironplate">BÚNKER INDUSTRIAL (ACERO - REBOTE LÁSER)</option>
+              <option value="marble">TRIBUNAL DE MÁRMOL (CARRARA - ULTRA DESLIZANTE)</option>
+              <option value="plasma">CASINO VIRTUAL (PLASMA - MICROGRAVEDAD)</option>
+            </select>
+          </div>
+
+          <div class="arena-feature-badge">
+            <span>⚔️ ARENA BATTLE ROYALE · 8 DADOS SIMULTÁNEOS EN PUGNA</span>
+          </div>
+
+          <!-- Reproductor de Música Procedural -->
+          <div class="config-group music-group">
+            <label>AUDIO PROCEDURAL (SINTETIZADO)</label>
+            <div class="music-controls">
+              <button id="btn-toggle-music" class="btn btn-action">MÚSICA: ENCENDIDO</button>
+              <button id="btn-toggle-sfx" class="btn btn-action">EFECTOS: ENCENDIDO</button>
+            </div>
+          </div>
+
+          <button id="btn-start-game" class="btn btn-primary btn-block">INGRESAR A LA FOSA</button>
+          <button id="btn-open-tutorial" class="btn btn-action btn-block" style="margin-top: 10px;">CÓMO JUGAR (TUTORIAL)</button>
+        </div>
+
+        <!-- Panel 2: Personalización y Desbloqueos (Niveles 1-150) -->
+        <div class="intro-card customization-card">
+          <h3>PROGRESO Y PERSONALIZACIÓN</h3>
+          
+          <div class="custom-tabs">
+            <button class="tab-btn active" data-tab="dice-skins">DADOS</button>
+            <button class="tab-btn" data-tab="tables">MESAS</button>
+            <button class="tab-btn" data-tab="ui-themes">TEMAS UI</button>
+            <button class="tab-btn" data-tab="titles">TÍTULOS</button>
+          </div>
+
+          <!-- Contenedores de opciones dinámicas -->
+          <div class="custom-tab-content active" id="tab-dice-skins">
+            <div class="custom-grid" id="dice-skins-grid">
+              <!-- Cargado por JS con validaciones de nivel -->
+            </div>
+          </div>
+
+          <div class="custom-tab-content" id="tab-tables">
+            <div class="custom-grid" id="tables-grid">
+              <!-- Estilos de mesa con físicas asociadas -->
+            </div>
+          </div>
+
+          <div class="custom-tab-content" id="tab-ui-themes">
+            <div class="custom-grid" id="ui-themes-grid">
+              <!-- Cambia las variables CSS globales -->
+            </div>
+          </div>
+
+          <div class="custom-tab-content" id="tab-titles">
+            <div class="custom-grid" id="titles-grid">
+              <!-- Títulos desbloqueables -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- PANTALLA DE JUEGO ACTIVO -->
+    <div id="play-screen" class="screen">
+      <!-- CABECERA INDUSTRIAL -->
+      <header class="header-console">
+        <div class="header-status">
+          <span>TORNEO DE LA FOSA | RONDAS PROGRESIVAS</span>
+        </div>
+        <div class="header-timer">
+          <div class="timer-title">TIEMPO PARA ELIMINACIÓN</div>
+          <div id="timer-display">30.0</div>
+        </div>
+        <div class="header-actions">
+          <button id="btn-reset-lobby" class="btn btn-danger-outline">SALIR AL LOBBY</button>
+        </div>
+      </header>
+
+      <!-- SECCIÓN DEL TABLERO Y LÍDERES -->
+      <div class="table-section">
+        <!-- Tabla de Supervivencia Lateral (Leaderboard) -->
+        <aside class="leaderboard-container">
+          <h3 id="leaderboard-title">JUGADORES VIVOS</h3>
+          <div class="leaderboard-header">
+            <span>Jugador</span>
+            <span>Secured</span>
+            <span>Turn</span>
+          </div>
+          <ul id="leaderboard-list">
+            <!-- Cargado dinámicamente -->
+          </ul>
+        </aside>
+
+        <!-- Mesa de Dados 3D (Three.js Canvas) -->
+        <main class="table-canvas-container">
+          <div id="canvas-3d"></div>
+          
+          <!-- Dice setting HUD interactivo -->
+          <div id="dice-setting-hud">
+            <span class="hud-label">CARA INICIAL:</span>
+            <div class="hud-faces">
+              <button class="face-selector-btn" data-face="1">1</button>
+              <button class="face-selector-btn" data-face="2">2</button>
+              <button class="face-selector-btn" data-face="3">3</button>
+              <button class="face-selector-btn" data-face="4">4</button>
+              <button class="face-selector-btn" data-face="5">5</button>
+              <button class="face-selector-btn active" data-face="6">6</button>
+            </div>
+          </div>
+
+          <!-- Indicador visual de arrastre o instrucción de tiro -->
+          <div id="swipe-instruction">DESLIZA EL DADO CON PRECISIÓN</div>
+          <!-- Sandbox overlay para práctica -->
+          <div id="sandbox-indicator" class="hidden">MODO SANDBOX DE ENTRENAMIENTO ACTIVADO</div>
+          <!-- HUD de física de la mesa actual -->
+          <div id="table-physics-hud">
+            Estilo: <span id="mat-label-physics">Roble</span> | 
+            Fricción: <span id="friction-label-physics">Media</span> | 
+            Gravedad: <span id="gravity-label-physics">Estándar</span>
+          </div>
+        </main>
+      </div>
+
+      <!-- PANEL DE CONTROL INFERIOR Y CRT LOG -->
+      <footer class="controls-section">
+        <!-- CRT Console Log -->
+        <div class="crt-log-container">
+          <div class="crt-scanline"></div>
+          <div class="crt-glow"></div>
+          <div class="crt-header">TELEMETRÍA CRÍTICA DE LA FOSA v1.50</div>
+          <div id="crt-logs" class="crt-content">
+            <!-- Entradas de la bitácora de juego -->
+          </div>
+        </div>
+
+        <!-- Centro de Acciones del Jugador -->
+        <div class="player-actions-container">
+          <div id="player-status-badge">TU TURNO (ALINEANDO TRAYECTORIA)</div>
+          <div class="score-summary">
+            <div class="score-box">
+              <span class="label">ACUMULADO TURNO</span>
+              <span id="turn-score" class="value">0</span>
+            </div>
+            <div class="score-box">
+              <span class="label">TOTAL ASEGURADO</span>
+              <span id="secured-score" class="value">0</span>
+            </div>
+          </div>
+          <div class="button-row">
+            <button id="btn-player-roll" class="btn btn-action">LANZAR DADO</button>
+            <button id="btn-player-bank" class="btn btn-success" disabled>ASEGURAR (BANK)</button>
+          </div>
+          <div class="skills-row">
+            <button id="btn-skill-brake" class="btn-skill" disabled>
+              <span class="skill-name">💥 FRENO MAGNÉTICO</span>
+              <span class="skill-key">[ESPACIO]</span>
+              <span class="skill-status" id="brake-status">LISTO</span>
+            </button>
+            <button id="btn-skill-shield" class="btn-skill" disabled>
+              <span class="skill-name">🛡️ ESCUDO DE FOSA</span>
+              <span class="skill-key">[C]</span>
+              <span class="skill-status" id="shield-status">LISTO</span>
+            </button>
+            <button id="btn-skill-shockwave" class="btn-skill" disabled>
+              <span class="skill-name">⚡ ONDA DE CHOQUE</span>
+              <span class="skill-key">[X]</span>
+              <span class="skill-status" id="shockwave-status">LISTO</span>
+            </button>
+            <button id="btn-skill-vortex" class="btn-skill" disabled>
+              <span class="skill-name">🧲 VÓRTICE TÁCTICO</span>
+              <span class="skill-key">[V]</span>
+              <span class="skill-status" id="vortex-status">LISTO</span>
+            </button>
+          </div>
+          <div id="lockout-overlay" class="hidden">
+            <div class="lockout-spinner"></div>
+            <span>STASIS POR 1 MORTAL <strong id="lockout-timer">3.0s</strong></span>
+          </div>
+        </div>
+      </footer>
+    </div>
+
+    <!-- PANTALLA DE SHOCK DE ELIMINACIÓN -->
+    <div id="elimination-screen" class="screen">
+      <div class="elimination-glow"></div>
+      <div class="elimination-content">
+        <h2 class="shock-title">TRIBUNAL DE LA FOSA</h2>
+        <div class="divider"></div>
+        <p class="shock-msg">EJECUCIÓN DE CONDENA EN CURSO...</p>
+        <h1 id="eliminated-name-display" class="eliminated-name">JUGADOR</h1>
+        <p class="shock-sub">ELIMINADO POR PUNTAJE INSUFICIENTE</p>
+      </div>
+    </div>
+
+    <!-- PANTALLA DE JUEGO TERMINADO (DERROTA) -->
+    <div id="gameover-screen" class="screen">
+      <div class="skull-glow">💀</div>
+      <h1 class="gameover-title">HAS SIDO ELIMINADO</h1>
+      <p class="gameover-sub">La fosa industrial reclamó tu puntaje.</p>
+      <div class="gameover-stats">
+        <p>Fuiste ejecutado en la ronda de eliminación.</p>
+        <p>Eliminado por: <span id="eliminated-by-name">---</span></p>
+        <div class="xp-gain-card" id="xp-lost-gain">
+          Ganaste +<span id="xp-lost-value">0</span> XP por tu desempeño
+        </div>
+      </div>
+      <div class="btn-row">
+        <button id="btn-gameover-retry" class="btn btn-primary">REINTENTAR</button>
+        <button id="btn-gameover-lobby" class="btn btn-default">VOLVER AL MENU</button>
+      </div>
+    </div>
+
+    <!-- PANTALLA DE VICTORIA SUPREMA -->
+    <div id="victory-screen" class="screen">
+      <div class="victory-glow">🏆</div>
+      <h1 class="victory-title">AGALLUDO SUPREMO</h1>
+      <p class="victory-sub">Único sobreviviente del Battle Royale.</p>
+      <div class="victory-stats">
+        <p>Superaste a todos los contrincantes con precisión y nervios de acero.</p>
+        <div class="xp-gain-card highlight" id="xp-win-gain">
+          ¡Victoria Suprema! Ganaste +<span id="xp-win-value">0</span> XP
+        </div>
+      </div>
+      <div class="btn-row">
+        <button id="btn-victory-retry" class="btn btn-primary">JUGAR OTRA VEZ</button>
+        <button id="btn-victory-lobby" class="btn btn-default">VOLVER AL MENU</button>
+      </div>
+    </div>
+
+    <!-- PANTALLA DE TUTORIAL ESTRUCTURADO -->
+    <div id="tutorial-screen" class="screen">
+      <header class="header-console">
+        <div class="header-status">
+          <span>MANUAL DE OPERACIONES | PROTOCOLO DE LA FOSA</span>
+        </div>
+        <div class="header-actions">
+          <button id="btn-close-tutorial" class="btn btn-primary">VOLVER AL MENU</button>
+        </div>
+      </header>
+
+      <div class="tutorial-container">
+        <div class="tutorial-sidebar">
+          <button class="tuto-tab-btn active" data-tuto="tuto-objetivo">1. Objetivo Central</button>
+          <button class="tuto-tab-btn" data-tuto="tuto-lanzamiento">2. El Lanzamiento</button>
+          <button class="tuto-tab-btn" data-tuto="tuto-asegurar">3. Asegurar Puntos (Bank)</button>
+          <button class="tuto-tab-btn" data-tuto="tuto-habilidades">4. Habilidades Tácticas</button>
+          <button class="tuto-tab-btn" data-tuto="tuto-radiacion">5. Radiación del Foso</button>
+        </div>
+
+        <div class="tutorial-content-pane">
+          <!-- Contenido 1: Objetivo -->
+          <div id="tuto-objetivo" class="tuto-pane active">
+            <h2>1. OBJETIVO DEL JUEGO</h2>
+            <div class="tuto-divider"></div>
+            <p>Agalludo Royale es un torneo competitivo de dados en formato **Battle Royale** contra otros 15 reclusos controlados por IA.</p>
+            <div class="tuto-alert warning">
+              <strong>REGLA DE SUPERVIVENCIA:</strong> Cada ronda dura exactamente 30 segundos. Cuando el temporizador llega a cero, el jugador con el puntaje asegurado más bajo en la mesa es <strong>descargado físicamente al foso</strong> (eliminado).
+            </div>
+            <p>El torneo consta de múltiples rondas clasificatorias con el siguiente formato de eliminación:</p>
+            <table class="tuto-table">
+              <thead>
+                <tr>
+                  <th>Ronda</th>
+                  <th>Jugadores Vivos</th>
+                  <th>Eliminados en la Ronda</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>Ronda 1</td>
+                  <td>16 Jugadores</td>
+                  <td>4 Jugadores (el peor de cada mesa de 4)</td>
+                </tr>
+                <tr>
+                  <td>Ronda 2</td>
+                  <td>12 Jugadores</td>
+                  <td>3 Jugadores</td>
+                </tr>
+                <tr>
+                  <td>Ronda 3</td>
+                  <td>9 Jugadores</td>
+                  <td>2 Jugadores</td>
+                </tr>
+                <tr>
+                  <td>Ronda 4</td>
+                  <td>7 Jugadores</td>
+                  <td>2 Jugadores</td>
+                </tr>
+                <tr>
+                  <td>Final (R5+)</td>
+                  <td>5 Jugadores</td>
+                  <td>1 Jugador por ronda hasta la Victoria</td>
+                </tr>
+              </tbody>
+            </table>
+            <p>Para ganar, debes ser el <strong>último superviviente en pie</strong> en la mesa final.</p>
+          </div>
+
+          <!-- Contenido 2: El Lanzamiento -->
+          <div id="tuto-lanzamiento" class="tuto-pane">
+            <h2>2. MECÁNICA DE LANZAMIENTO</h2>
+            <div class="tuto-divider"></div>
+            <p>En tu turno operativo, puedes lanzar tu dado de dos maneras:</p>
+            <ul>
+              <li><strong>Control Táctico por Ratón (Arrastrar):</strong> Mantén presionado el clic izquierdo del ratón sobre tu dado (en el área de salida inferior), arrástralo hacia atrás para apuntar y calcular la fuerza, y suéltalo para lanzarlo por la mesa.</li>
+              <li><strong>Lanzamiento Rápido:</strong> Haz clic en el botón verde <strong>LANZAR DADO</strong> en el panel de control para un tiro estándar con fuerza aleatoria controlada.</li>
+            </ul>
+            <p>Al detenerse el dado, el número de la cara superior se añade a tu <strong>Acumulado Turno</strong>:</p>
+            <div class="tuto-dice-grid">
+              <div class="tuto-dice-box">
+                <span class="dice-val">2 - 6</span>
+                <p>Suma el valor directamente a tu acumulado actual del turno. Puedes volver a lanzar tantas veces como quieras para acumular más puntos.</p>
+              </div>
+              <div class="tuto-dice-box fatal">
+                <span class="dice-val">1 Mortal</span>
+                <p>¡Peligro! Si el dado muestra un 1, tu acumulado del turno actual se evapora instantáneamente (se reduce a 0) y entras en <strong>Lockout (estasis) durante 3 segundos</strong> en los que no puedes realizar ninguna acción.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contenido 3: Asegurar Puntos -->
+          <div id="tuto-asegurar" class="tuto-pane">
+            <h2>3. ASEGURAR PUNTOS (BANK)</h2>
+            <div class="tuto-divider"></div>
+            <p>Dado que lanzar consecutivamente aumenta el riesgo de sacar un <strong>1 Mortal</strong> y perder todo lo acumulado, debes saber cuándo detenerte y asegurar tus ganancias.</p>
+            <p>Al hacer clic en el botón **ASEGURAR (BANK)**:</p>
+            <ol>
+              <li>Los puntos de tu **Acumulado Turno** se transfieren permanentemente a tu **Total Asegurado** del torneo.</li>
+              <li>Tu acumulado del turno se reinicia a 0.</li>
+              <li>Tu dado se restablece a la zona de salida listo para el siguiente turno.</li>
+            </ol>
+            <div class="tuto-alert info">
+              <strong>PUNTAJES ACUMULATIVOS:</strong> ¡Tus puntos asegurados se acumulan y se siguen sumando entre las rondas del torneo! Cada punto que asegures en la Ronda 1 te dará una ventaja permanente en las rondas clasificatorias posteriores.
+            </div>
+            <p><strong>Estrategia Clave:</strong> No seas demasiado codicioso. Asegurar montos medianos (entre 10 y 14 puntos) de forma constante es mucho más seguro que intentar tiros arriesgados que puedan dejarte en lockout.</p>
+          </div>
+
+          <!-- Contenido 4: Habilidades Tácticas -->
+          <div id="tuto-habilidades" class="tuto-pane">
+            <h2>4. HABILIDADES TÁCTICAS OPERATIVAS</h2>
+            <div class="tuto-divider"></div>
+            <p>Dispones de dos ranuras de habilidades cargadas de forma gratuita al inicio de cada ronda para manipular el azar físico a tu favor:</p>
+            <div class="tuto-skills-detail">
+              <div class="tuto-skill-card">
+                <h3>💥 FRENO MAGNÉTICO <span class="key">[ESPACIO]</span></h3>
+                <p>Detiene el dado de golpe mientras está en movimiento en la mesa. Úsalo cuando veas que el dado va a colisionar con una esquina peligrosa o cuando esté girando sobre una cara favorable (5 o 6) para congelar el valor inmediatamente.</p>
+              </div>
+              <div class="tuto-skill-card">
+                <h3>🛡️ ESCUDO DE FOSA <span class="key">[C]</span></h3>
+                <p>Activa una barrera de energía protectora en tu turno. Si el siguiente tiro resulta en un <strong>1 Mortal</strong>, el escudo absorberá el impacto, guardará automáticamente tu acumulado del turno en tu Total Asegurado (Bank automático) y evitará la stasis de lockout.</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Contenido 5: Radiación del Foso -->
+          <div id="tuto-radiacion" class="tuto-pane">
+            <h2>5. RADIACIÓN DEL FOSO (TEMPORIZADOR CRÍTICO)</h2>
+            <div class="tuto-divider"></div>
+            <p>El foso es inestable y, a medida que la ronda se acerca a su fin, las condiciones ambientales se vuelven hostiles:</p>
+            <ul>
+              <li><strong>Peligro a los 7 Segundos:</strong> Cuando el temporizador cae por debajo de los 7.0 segundos restantes de la ronda, la consola parpadea en rojo y escucharás latidos de advertencia.</li>
+              <li><strong>Drenaje de Puntos:</strong> La radiación del foso comenzará a drenar aleatoriamente puntos de tu **Total Asegurado** permanente a un ritmo constante de 1 punto por tick.</li>
+            </ul>
+            <p><strong>Estrategia Operativa:</strong> No guardes puntos al final de la ronda si el temporizador es bajo; intenta realizar tus tiradas y asegurar antes de que se active el drenaje de radiación.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Cargar motor de juego -->
+  <script src="renderer.js"></script>
+
+  <!-- PWA Service Worker Registration -->
+  <script>
+    if ('serviceWorker' in navigator) {
+      window.addEventListener('load', () => {
+        navigator.serviceWorker.register('./sw.js').then((reg) => {
+          console.log('[PWA] Service Worker registrado:', reg.scope);
+        }).catch((err) => {
+          console.warn('[PWA] Service Worker no registrado (entorno local o sin SSL):', err);
+        });
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,6 +1,9 @@
 *.iml
-.gradle
-.kotlin
+**/.gradle/
+**/.kotlin/
+**/build/
+**/dist/
+**/node_modules/
 /local.properties
 /.idea/caches
 /.idea/libraries
@@ -16,3 +19,13 @@
 local.properties
 .env
 debug.keystore
+
+# Node & Desktop Builds
+node_modules/
+dist/
+*.apk
+*.aab
+*.exe
+*.zip
+temp_*.html
+
