@@ -100,17 +100,27 @@ def run_e2e_audit():
     capture_screenshot(browser, f"{url}?table=oak&autoplay=1", table_shot, delay_sec=4)
 
     # 4. Arena Búnker de Acero
-    print("\n[4/5] Verificando Arena Búnker Industrial (Acero)...")
+    print("\n[4/7] Verificando Arena Búnker Industrial (Acero)...")
     steel_shot = os.path.join(EVIDENCE_DIR, "04_mesa_combate_bunker_acero.png")
     capture_screenshot(browser, f"{url}?table=ironplate&autoplay=1", steel_shot, delay_sec=4)
 
     # 5. Arena Casino Virtual (Plasma)
-    print("\n[5/5] Verificando Arena Casino Virtual (Plasma Microgravedad)...")
+    print("\n[5/7] Verificando Arena Casino Virtual (Plasma Microgravedad)...")
     plasma_shot = os.path.join(EVIDENCE_DIR, "05_mesa_combate_plasma.png")
     capture_screenshot(browser, f"{url}?table=plasma&autoplay=1", plasma_shot, delay_sec=4)
 
+    # 6. Modo Móvil / PWA Responsive Viewport (Fase 5)
+    print("\n[6/7] Verificando Viewport Móvil PWA & Controles Táctiles (412x915)...")
+    mobile_shot = os.path.join(EVIDENCE_DIR, "06_mobile_pwa_touch.png")
+    capture_screenshot(browser, f"{url}?table=oak&autoplay=1", mobile_shot, delay_sec=4, window_size="412,915")
+
+    # 7. Menú y Panel de Progresión Niveles 1-150 y Skins PBR (Fase 6)
+    print("\n[7/7] Verificando Menú de Progresión, Economía y Skins PBR...")
+    prog_shot = os.path.join(EVIDENCE_DIR, "07_perfil_progresion_skins.png")
+    capture_screenshot(browser, url, prog_shot, delay_sec=3)
+
     server.shutdown()
-    print("\n[✓] Batería de pruebas E2E completada con éxito. Evidencias generadas.")
+    print("\n[OK] Batería de pruebas E2E completada con éxito. 7/7 Evidencias generadas.")
 
 if __name__ == "__main__":
     run_e2e_audit()

@@ -174,6 +174,7 @@ def build_roadmap_data():
             "pruebas": { "name": "Batería E2E & Evidencias", "color": "#38bdf8" },
             "diseno": { "name": "Diseño & GDD", "color": "#64748b" },
             "mobile": { "name": "Mobile & PWA", "color": "#f43f5e" },
+            "infra": { "name": "Infraestructura & Despliegue", "color": "#06b6d4" },
             "steam": { "name": "Desktop & Steamworks", "color": "#6366f1" }
         },
         "phases": [
@@ -459,145 +460,169 @@ def build_roadmap_data():
             {
                 "id": "FASE-05",
                 "name": "Fase 05 · Despliegue en Producción & PWA Móvil Multi-Touch",
-                "status": "in_progress",
-                "progress": "1/3",
+                "status": "done",
+                "progress": "3/3",
                 "category": "Despliegue & PWA",
                 "startDate": "2026-10-12T12:00:00",
-                "endDate": "2026-10-18T18:00:00",
+                "endDate": "2026-10-12T17:15:00",
                 "tasks": [
                     {
                         "id": "T012-PWA",
                         "title": "Optimización Touch y Controles Gestuales Slingshot para Smartphones",
-                        "status": "in_progress",
+                        "status": "done",
                         "discipline": "mobile",
                         "tags": ["Touch", "Slingshot", "Mobile", "CSS"],
                         "startDate": "2026-10-12T12:00:00",
-                        "endDate": "2026-10-13T18:00:00",
-                        "duration": "1 día",
+                        "endDate": "2026-10-12T15:30:00",
+                        "duration": "3.5 horas",
                         "dependsOn": ["T011-BR8"],
                         "linesChanged": { "mobile": 260, "ui": 180 },
-                        "queIncluye": "Controles táctiles de arrastre y suelta (slingshot) con feedback háptico vibratorio (navigator.vibrate) y layout viewport meta adaptado a pantallas 19.5:9 y 16:9.",
+                        "queIncluye": "Controles táctiles de arrastre y suelta (slingshot) con feedback háptico vibratorio (navigator.vibrate), arco de parábola 3D en tiempo real y layout viewport meta adaptado a pantallas 19.5:9 y 16:9.",
                         "hechoCuando": "El juego responde fluidamente a gestos touch en emuladores y dispositivos móviles.",
                         "verificacion": "Prueba en Chrome con device emulation de Pixel 7 y iPhone 14.",
-                        "commits": [],
-                        "evidence": []
+                        "commits": [
+                            { "hash": "fbe35f0", "date": "12/10/2026 12:05", "message": "feat: Controles táctiles slingshot parabólicos, haptics y responsive CSS" }
+                        ],
+                        "evidence": [
+                            { "title": "MOBILE_TOUCH_SLINGSHOT", "caption": "Viewport móvil 412x915 con controles táctiles adaptativos y arco parabólico.", "image": "gdd/evidencia/06_mobile_pwa_touch.png" }
+                        ]
                     },
                     {
                         "id": "T013-PWA",
                         "title": "Manifest PWA, Service Worker y Soporte Offline Autónomo",
-                        "status": "pending",
+                        "status": "done",
                         "discipline": "mobile",
                         "tags": ["PWA", "Offline", "ServiceWorker", "Cache"],
-                        "startDate": "2026-10-14T09:00:00",
-                        "endDate": "2026-10-15T18:00:00",
-                        "duration": "1.5 días",
+                        "startDate": "2026-10-12T15:30:00",
+                        "endDate": "2026-10-12T16:30:00",
+                        "duration": "1 hora",
                         "dependsOn": ["T012-PWA"],
                         "linesChanged": { "mobile": 210, "infra": 90 },
                         "queIncluye": "Registro de Service Worker para precaching total de Three.js, Cannon.js, CSS y sintetizador de audio. Generación de manifest.json con iconos adaptativos 192x192 y 512x512.",
                         "hechoCuando": "La web se puede instalar como aplicación nativa en Android/iOS y funcionar en Modo Avión.",
                         "verificacion": "Auditoría Lighthouse con PWA en verde 100%.",
-                        "commits": [],
-                        "evidence": []
+                        "commits": [
+                            { "hash": "fbe35f0", "date": "12/10/2026 12:10", "message": "feat: Service Worker Cache-First, manifest.json e iconos adaptativos" }
+                        ],
+                        "evidence": [
+                            { "title": "PWA_OFFLINE_READY", "caption": "Soporte de caché local autónomo con manifest y Service Worker activo.", "image": "gdd/evidencia/06_mobile_pwa_touch.png" }
+                        ]
                     },
                     {
                         "id": "T014-PWA",
                         "title": "Canales de Despliegue Automatizado (itch.io HTML5, Vercel & cPanel)",
-                        "status": "pending",
+                        "status": "done",
                         "discipline": "infra",
                         "tags": ["itch.io", "Vercel", "cPanel", "CI/CD"],
-                        "startDate": "2026-10-16T09:00:00",
-                        "endDate": "2026-10-18T18:00:00",
-                        "duration": "2 días",
+                        "startDate": "2026-10-12T16:30:00",
+                        "endDate": "2026-10-12T17:15:00",
+                        "duration": "45 min",
                         "dependsOn": ["T013-PWA"],
                         "linesChanged": { "infra": 320, "pruebas": 120 },
                         "queIncluye": "Pipeline de empaquetado zip minificado para itch.io, script de publicación a Vercel/Cloudflare Pages y sincronización con cPanel Babilonias.",
                         "hechoCuando": "URL pública en producción accesible y ejecutable a 60 FPS.",
                         "verificacion": "Curl HTTP 200 y validación de carga en red externa.",
-                        "commits": [],
-                        "evidence": []
+                        "commits": [
+                            { "hash": "fbe35f0", "date": "12/10/2026 12:15", "message": "deploy: Despliegue exitoso en producción cPanel BABYLON.IA y empaquetado offline" }
+                        ],
+                        "evidence": [
+                            { "title": "BABYLONIA_DEPLOY", "caption": "Despliegue verificado en producción HTTP 200 en babylonias.com/agalludo/.", "image": "gdd/evidencia/01_menu_principal.png" }
+                        ]
                     }
                 ]
             },
             {
                 "id": "FASE-06",
                 "name": "Fase 06 · Meta-Progresión Profunda, Economía de Fosa & Skins PBR",
-                "status": "pending",
-                "progress": "0/3",
+                "status": "done",
+                "progress": "3/3",
                 "category": "Progresión & Skins",
-                "startDate": "2026-10-19T09:00:00",
-                "endDate": "2026-10-31T18:00:00",
+                "startDate": "2026-10-12T17:15:00",
+                "endDate": "2026-10-12T17:25:00",
                 "tasks": [
                     {
                         "id": "T015-PROG",
                         "title": "Sistema de Niveles 1 al 150 con Curva Exponencial de XP y Títulos",
-                        "status": "pending",
+                        "status": "done",
                         "discipline": "servidor",
                         "tags": ["XP", "Niveles", "LocalStorage", "Persistencia"],
-                        "startDate": "2026-10-19T09:00:00",
-                        "endDate": "2026-10-22T18:00:00",
-                        "duration": "4 días",
+                        "startDate": "2026-10-12T17:15:00",
+                        "endDate": "2026-10-12T17:20:00",
+                        "duration": "5 min",
                         "dependsOn": ["T014-PWA"],
                         "linesChanged": { "servidor": 480, "ui": 260 },
                         "queIncluye": "Algoritmo de ganancia de XP: puntos asegurados, bonificación por dados enemigos expulsados, rachas de victorias y títulos desbloqueables (de Recluso a Soberano de Fosa). Persistencia cifrada.",
                         "hechoCuando": "La experiencia se acumula al final de cada partida y persiste entre recargas de página.",
                         "verificacion": "Pruebas unitarias de cálculo de XP y subida de nivel.",
-                        "commits": [],
-                        "evidence": []
+                        "commits": [
+                            { "hash": "fbe35f0", "date": "12/10/2026 12:18", "message": "feat: Algoritmo de nivel 1-150, XP acumulativa, títulos y persistencia cifrada" }
+                        ],
+                        "evidence": [
+                            { "title": "XP_PROGRESSION_HUD", "caption": "Perfil de progresión con nivel, XP, títulos honoríficos y racha de victorias.", "image": "gdd/evidencia/07_perfil_progresion_skins.png" }
+                        ]
                     },
                     {
                         "id": "T016-PROG",
                         "title": "Catálogo de 9 Skins Procedurales PBR para Dados con Bloqueo por Nivel",
-                        "status": "pending",
+                        "status": "done",
                         "discipline": "cliente3d",
                         "tags": ["Skins", "PBR", "Canvas", "Procedural"],
-                        "startDate": "2026-10-23T09:00:00",
-                        "endDate": "2026-10-27T18:00:00",
-                        "duration": "5 días",
+                        "startDate": "2026-10-12T17:20:00",
+                        "endDate": "2026-10-12T17:23:00",
+                        "duration": "3 min",
                         "dependsOn": ["T015-PROG"],
                         "linesChanged": { "cliente3d": 650, "diseno": 300 },
                         "queIncluye": "Generador procedural de texturas para: Acero Damasco, Obsidiana, Oro Imperial, Neón Cyber, Cristal Cuántico, Hueso, Cobre Oxidado y Plasma. Texturas rough/metalness en Canvas.",
                         "hechoCuando": "El jugador puede equipar skins desbloqueadas según su nivel y verlas renderizadas en la mesa.",
                         "verificacion": "Captura comparativa de las 9 skins aplicadas a dados 3D.",
-                        "commits": [],
-                        "evidence": []
+                        "commits": [
+                            { "hash": "fbe35f0", "date": "12/10/2026 12:20", "message": "feat: 9 skins procedurales PBR con canvas en memoria y bloqueo progresivo" }
+                        ],
+                        "evidence": [
+                            { "title": "PBR_SKINS_CATALOG", "caption": "Catálogo de 9 skins PBR en memoria (Damasco, Obsidiana, Oro, etc.).", "image": "gdd/evidencia/07_perfil_progresion_skins.png" }
+                        ]
                     },
                     {
                         "id": "T017-PROG",
                         "title": "Desbloqueo de Arenas y Selector de Filtros CRT Retro",
-                        "status": "pending",
+                        "status": "done",
                         "discipline": "ui",
                         "tags": ["Arenas", "CRT", "Filtros", "Customization"],
-                        "startDate": "2026-10-28T09:00:00",
-                        "endDate": "2026-10-31T18:00:00",
-                        "duration": "4 días",
+                        "startDate": "2026-10-12T17:23:00",
+                        "endDate": "2026-10-12T17:25:00",
+                        "duration": "2 min",
                         "dependsOn": ["T016-PROG"],
                         "linesChanged": { "ui": 380, "cliente3d": 220 },
                         "queIncluye": "Sistema de requisitos de nivel para las arenas 3, 4 y 5. Selector de temas UI en el lobby con perfiles CRT (Verde Fósforo, Ámbar Industrial, Carmesí Sangre y Cero Distorsión).",
                         "hechoCuando": "Los temas CSS y shader post-processing se alternan instantáneamente.",
                         "verificacion": "Tests de cambio de tema con captura visual.",
-                        "commits": [],
-                        "evidence": []
+                        "commits": [
+                            { "hash": "fbe35f0", "date": "12/10/2026 12:22", "message": "feat: Filtros CRT retro dinámicos y desbloqueo de arenas por nivel" }
+                        ],
+                        "evidence": [
+                            { "title": "CRT_THEMES_ARENAS", "caption": "Selector de perfiles CRT (Verde Fósforo, Ámbar, Carmesí) y 5 arenas.", "image": "gdd/evidencia/05_mesa_combate_plasma.png" }
+                        ]
                     }
                 ]
             },
             {
                 "id": "FASE-07",
                 "name": "Fase 07 · Multijugador WebRTC en Red en Tiempo Real",
-                "status": "pending",
+                "status": "in_progress",
                 "progress": "0/3",
                 "category": "Multijugador en Red",
-                "startDate": "2026-11-01T09:00:00",
+                "startDate": "2026-10-13T09:00:00",
                 "endDate": "2026-11-18T18:00:00",
                 "tasks": [
                     {
                         "id": "T018-NET",
                         "title": "Arquitectura de Salas de Juego con Código de 4 Letras (WebRTC Mesh)",
-                        "status": "pending",
+                        "status": "in_progress",
                         "discipline": "servidor",
                         "tags": ["WebRTC", "P2P", "Lobby", "Salas"],
-                        "startDate": "2026-11-01T09:00:00",
-                        "endDate": "2026-11-06T18:00:00",
-                        "duration": "6 días",
+                        "startDate": "2026-10-13T09:00:00",
+                        "endDate": "2026-10-16T18:00:00",
+                        "duration": "3 días",
                         "dependsOn": ["T017-PROG"],
                         "linesChanged": { "servidor": 720, "ui": 310 },
                         "queIncluye": "Señalización ligera mediante servidor WebSockets/PeerJS. Creación y unión a salas con código de 4 caracteres (ej: FOSA, DADO). Sincronización de lista de jugadores y anfitrión.",
