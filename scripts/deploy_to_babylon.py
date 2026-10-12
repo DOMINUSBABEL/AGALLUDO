@@ -100,17 +100,18 @@ def upload_ftp():
             rel_dir = os.path.relpath(root, SRC_WEB).replace("\\", "/")
             cur_remote_dir = remote_base if rel_dir == "." else f"{remote_base}/{rel_dir}"
             ftp_mkdirs(ftp, cur_remote_dir)
+            ftp.cwd(cur_remote_dir)
 
             for f in files:
                 local_path = os.path.join(root, f)
-                remote_file = f"{cur_remote_dir}/{f}"
                 with open(local_path, "rb") as fp:
                     ftp.storbinary(f"STOR {f}", fp)
-                print(f"    -> Subido: {rel_dir}/{f} ({os.path.getsize(local_path)} bytes)")
+                print(f"    -> Subido a {cur_remote_dir}: {f} ({os.path.getsize(local_path)} bytes)")
 
         # Subir el zip descargable
         print("  -> Subiendo Agalludo-win.zip a /public_html/downloads/...")
         ftp_mkdirs(ftp, "/public_html/downloads")
+        ftp.cwd("/public_html/downloads")
         local_zip = os.path.join(BABYLON_DOWNLOADS, "Agalludo-win.zip")
         with open(local_zip, "rb") as fp:
             ftp.storbinary("STOR Agalludo-win.zip", fp)
