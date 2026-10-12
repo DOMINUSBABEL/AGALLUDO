@@ -92,30 +92,32 @@ def upload_ftp():
         ftp.login(FTP_USER, FTP_PASS)
         print("  [OK] Autenticado en cPanel FTP.")
 
-        # Subir carpeta agalludo
-        remote_base = "/public_html/agalludo"
-        ftp_mkdirs(ftp, remote_base)
+        # Subir a ambas rutas raíz (/ y /public_html/) para máxima compatibilidad con vhost
+        for remote_base in ["/agalludo", "/public_html/agalludo"]:
+            print(f"  -> Sincronizando directorio remoto: {remote_base}...")
+            ftp_mkdirs(ftp, remote_base)
 
-        for root, dirs, files in os.walk(SRC_WEB):
-            rel_dir = os.path.relpath(root, SRC_WEB).replace("\\", "/")
-            cur_remote_dir = remote_base if rel_dir == "." else f"{remote_base}/{rel_dir}"
-            ftp_mkdirs(ftp, cur_remote_dir)
-            ftp.cwd(cur_remote_dir)
+            for root, dirs, files in os.walk(SRC_WEB):
+                rel_dir = os.path.relpath(root, SRC_WEB).replace("\\", "/")
+                cur_remote_dir = remote_base if rel_dir == "." else f"{remote_base}/{rel_dir}"
+                ftp_mkdirs(ftp, cur_remote_dir)
+                ftp.cwd(cur_remote_dir)
 
-            for f in files:
-                local_path = os.path.join(root, f)
-                with open(local_path, "rb") as fp:
-                    ftp.storbinary(f"STOR {f}", fp)
-                print(f"    -> Subido a {cur_remote_dir}: {f} ({os.path.getsize(local_path)} bytes)")
+                for f in files:
+                    local_path = os.path.join(root, f)
+                    with open(local_path, "rb") as fp:
+                        ftp.storbinary(f"STOR {f}", fp)
+                    print(f"    -> Subido a {cur_remote_dir}: {f} ({os.path.getsize(local_path)} bytes)")
 
-        # Subir el zip descargable
-        print("  -> Subiendo Agalludo-win.zip a /public_html/downloads/...")
-        ftp_mkdirs(ftp, "/public_html/downloads")
-        ftp.cwd("/public_html/downloads")
+        # Subir el zip descargable a /downloads y /public_html/downloads
         local_zip = os.path.join(BABYLON_DOWNLOADS, "Agalludo-win.zip")
-        with open(local_zip, "rb") as fp:
-            ftp.storbinary("STOR Agalludo-win.zip", fp)
-        print("    -> Agalludo-win.zip subido exitosamente a /public_html/downloads/.")
+        for dl_dir in ["/downloads", "/public_html/downloads"]:
+            print(f"  -> Subiendo Agalludo-win.zip a {dl_dir}...")
+            ftp_mkdirs(ftp, dl_dir)
+            ftp.cwd(dl_dir)
+            with open(local_zip, "rb") as fp:
+                ftp.storbinary("STOR Agalludo-win.zip", fp)
+            print(f"    -> Agalludo-win.zip subido exitosamente a {dl_dir}.")
 
         ftp.quit()
         print("  [OK] ¡Despliegue a BABYLON.IA completado al 100%!")
